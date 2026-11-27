@@ -1,13 +1,13 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32D31606A329
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D107606A332
 	for <openvpn-devel@archiver.kernel.org>; Fri, 27 Nov 2026 03:10:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=UoWF67lZ;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=LSnscNNu;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=DskVNifx;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=Z1/4erRM
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=kWW9hoZx;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=izPVFAUi;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=gBT/qzKC;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=KJu21gIq
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
@@ -15,29 +15,29 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
 	List-Unsubscribe-Post:List-Owner;
-	bh=YKA3UlMQl7SczAJSb3sZCBL3nEgb0pS3z6PmZ1OZDmY=; b=UoWF67lZZ3KOu2G+UFWHPTtXXg
-	HdpT7guX89oh7y7RqXwMnSwI38iVnqMgweTM24QT2eqZFj+m97z/DiI/rZ2vPDqMW1T82XzM6E8tD
-	UnAjc2GPJ1z25Lb0z9tFlL69ZxSRzvkn11tO98r/PqYjCeF5/Saw/0CJ3tgr8Xo3PWos=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=ZMnf90HNHnZMVXftShH72aPeeX2dPiGEjKUpAbFiLUM=; b=kWW9hoZx/IV79KmbWyBGHZdASe
+	jVwsB8xGINbuWZF94mPXY5xZS44sX0qLcqsXI0TRxL0A1jYMQLrUfSB0+8nfABCqsbVwEDJvLQrWr
+	v22hkgBylcHBWmo1s19cfGAKQ0I7qdeUjZJRgQMO3Yb17kbYSS6MXhpLPULn2xSYlC3U=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xWmM9-000000004ps-1rXl;
-	Fri, 27 Nov 2026 03:10:37 +0000
+	id 1xWmMA-000000001Ko-3NHu;
+	Fri, 27 Nov 2026 03:10:38 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xWmM8-000000004pm-0cfs
+ (envelope-from <gerrit@openvpn.net>) id 1xWmM9-000000001Kg-1few
  for openvpn-devel@lists.sourceforge.net;
- Fri, 27 Nov 2026 03:10:36 +0000
+ Fri, 27 Nov 2026 03:10:37 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=G7dOtPlXk3tu83vZPMn9tgdjFB2/xA+PTg8rsHIAKns=; b=LSnscNNuSahxh5yu5RLAXXGB+w
- TiIAdy6ncxq23sh/jxm5oTuqDsmSsJ0QswZCvPDV133oBnf+UrpKo87yKZNTRyFj/byN8neEVDiJi
- cd+E4src3TzxhHu6KPcmhD0DJJZ013ofc5xNkQyaDYSTiOglKerSIj4FnVFN+7YFqm8E=;
+ bh=/HyskeR6ozbIHnRipu/b8nHaSS+vSLQZc3r+j/AoDYA=; b=izPVFAUiqMv/6n/8xvGRCBL787
+ 7zA96jhAC0fd9rCwDJyI1EOxmaXVKiIrcZUKZb+0kq+lIFDvA1gqY7B9gPqlagA2TvzXIKCXoJOpI
+ bql2iaJ7Xbq4nQJ+4CJ0OpYv8yWJfe1LbMl0Kw7WIT3Is8FEuqUa4W8E5W6af8a4A+5Q=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
@@ -45,69 +45,69 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=G7dOtPlXk3tu83vZPMn9tgdjFB2/xA+PTg8rsHIAKns=; b=DskVNifxe5jQwKhu8cE3rk38k1
- ul8eDVTK0bEtoKgsi3naRY5BXxa0LiyyoIWNk3gV9YzMSgQ2lx/d++/o3jK9Ky0cKJIk4XgEHWQ0Y
- TXh3dTyu2c8GTeWLN6HjK7Az2DYt/2GkaVWOICfyn3YKxZZU1H9KcwdjajVl6qQoj6Ls=;
-Received: from mail-wm1-f44.google.com ([209.85.128.44])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ bh=/HyskeR6ozbIHnRipu/b8nHaSS+vSLQZc3r+j/AoDYA=; b=gBT/qzKC6BhkXlAXrYuOI+4yEy
+ XyxJZSi21qD7wjWe20dnQkvdkt7B/oiswUr0ZqiGHdV9woQNTcd+TISSey9X3IgpXoRIZT4tR07k3
+ j5elobzggfGff79wC7vgquLFC5HQEJW84r92NslSS+8SNkgS15AWhmz+mtU0NRr8dPaI=;
+Received: from mail-wr1-f53.google.com ([209.85.221.53])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xWmM4-000000006rw-41Ps for openvpn-devel@lists.sourceforge.net;
- Fri, 27 Nov 2026 03:10:36 +0000
-Received: by mail-wm1-f44.google.com with SMTP id
- 5b1f17b1804b1-4bb6c7b6dbdso70765825e9.0
+ id 1xWmM3-000000003B2-0uZz for openvpn-devel@lists.sourceforge.net;
+ Fri, 27 Nov 2026 03:10:37 +0000
+Received: by mail-wr1-f53.google.com with SMTP id
+ ffacd0b85a97d-4ac08f4a0b2so5413454f8f.3
  for <openvpn-devel@lists.sourceforge.net>;
- Thu, 26 Nov 2026 19:10:32 -0800 (PST)
+ Thu, 26 Nov 2026 19:10:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1795749026; x=1796353826; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1795749025; x=1796353825; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=G7dOtPlXk3tu83vZPMn9tgdjFB2/xA+PTg8rsHIAKns=;
- b=Z1/4erRMAvEqOusqyG4qkSYxKFzEXLveW3oKMe4ipYU5yQUKV1va/wqZid655d4XGd
- 8JRnzi/OWz6d09OQNekSxdg+3fUrONT2hVFgEjVKIQ/TSJGOPIsX7Lh1+1sMSiZVeblD
- KIKR2k0gNi18gGyxJCjJtz1ydOuwbBnTKNSNMCzQgCVBKzqAe9Lhsv3eFKk7WH3zpX4f
- fHKJVY6BAfY0piFlAmcLABaChXGy0bJcIy/RKLQVgfJNMDzuPy/rTI2e9lEBbPG4j//E
- uB41pQ5NKlJMaavpOZHlP3X+Tzkrwu59V6IgEVY4cPmsnESMcUg/I9qWGo+/hn72+hIq
- Ylxw==
+ bh=/HyskeR6ozbIHnRipu/b8nHaSS+vSLQZc3r+j/AoDYA=;
+ b=KJu21gIq90cCMWz4bk2moSAAUiZ1wvrl7Pm1/2eFxCH2bS+qesLdXEj4beQnufWa+c
+ IQarfiZIWlZFP7y9MlffV3ivK52qFUYH228Th4o9EX59Tik7N1VIAqjQ9RiiNOzjKwXa
+ K1YDsiiHHzD0eICIDhwGXtBunEMJPURbkV110D634Zmc7qHZbL2cDatqaq7aVt1MkPfU
+ c8flNt6Bg9j4YS1IROejwOWj0tOmluv8yp542qQXFENHVF9aDLVf2jne5zPoM7nau2nY
+ nrmugLkR0gMBRPB1C2q8X3U0UxIhZb7nmyQ3gE/DHYbL23Vuy6lGLcYVHuT3EtcS4EGi
+ JKfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1795749026; x=1796353826;
+ d=1e100.net; s=20260707; t=1795749025; x=1796353825;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=G7dOtPlXk3tu83vZPMn9tgdjFB2/xA+PTg8rsHIAKns=;
- b=lKbPCMi1b/NPi5RQB7kwFxOoEiiT5NUiGRfA5NltVSMgnC+QVlacjp10Rdloi/cqkI
- BETQ69MxcpGB25EA9JaAcHFMilvlbXFwExFdOiNs6wMz9NjBuVcVmjz1k8++p6ebeQ7U
- BeWqRlj0vkN8PZp65AqR0rQHxvvmRBffDp7y3ofczcE4Tz2jnhNIbDKWAC50jvTBUkN3
- oe8ZDDt54hCTX8n+rq/dhwn2QYv1yab9eRh6dPHvXQH5eJRpYGx4xg2f/TcQuh7sQkJT
- +rcpvv9Y853dogrZyC30BEmPl/SRpkZfmkUL0rVaYaIkgj1vKeYDi2y/DWjtM6Fz4KNX
- qaZQ==
-X-Gm-Message-State: APuU4Z8SpKJkTGcAYt8xBh40CRCCv/Ly1e86bkOUcCyv0zUKJIRScwG9
- +m34nnSJoJKsXUDxBqZhQKSQ7p17XuQnE8MzqSKROdGUNTM+UjowhZ/46gGV+7VliRlBjfSiz7r
- hxhdBWggvYKnx64u2zomgiAK42v2UrHjsuaa47BU5dV9QwZruRGRX3+YywNC3ovuXtmUy
-X-Gm-Gg: AZFdTZem+98eo2GryQO1dhpQF+HpMcgqW2EoBSJkSr03rGDF2/kQlr+l/qPyo1IWOdv
- 0QnuOIsyC5UMtou291Vnhy3Zea6cZ9+ycqbbEgTeU5Doa3hQ4d2pnNFfAuUrJ1VwyQdAgmwMVcK
- lw0a4kdJGaLPyvp1jznuMWImW1n52lB1UTRpK/TJ1qKNHp71PURwmyuKuI1vhfqVvznQx/+YgwA
- EzaRosKfatQRAzzlFsdZ8JrbzmL+uwgCYg/8cDO0eft/lr5a3+iKt+n2HJosO43fGybQAfStxbQ
- KRCjIMyLpGxBA+0B464la2n8XEKMB3rZmAwvqVERPw9K8NydDFubnNx35Hg/bDwFVa/PLjFUMXF
- t9eEyUyjbvVBy/zVDwULB4FjMeT2ubZbIaoo/xXdS1jOcGAXE6YGK7kj/qARPx8RykGMHVPdl91
- FBKGqIvW4eQIIJn0esbKr855ylWubeL4p2fYFo7ukecPFSnIil3hBgrFcf1kAb8u8bOjPXxt75g
- cz3ohC7i9HSMIHqqBQ3MHodZz8jz/bvWWndCg09XoHENeHDlVxn8WRbjO2QnndsNb7qPCRnbN8f
- sUSJ02GLBsWyvGFLaIt8WJPl80Vi4ne0ZZeYLVdTWdSOOutr/yzVtPryXMvo2RHl//Q0cI+5t6E
- QJwO6y50xb14KHVKLrSZs2J/pBDkENvfZ/QmSZBQ1CwjIh8AQJtNprCSsv4jf8OdxwViBJG4Z2U
- IlezjIAfR0EzbDV/U=
-X-Received: by 2002:a05:600c:5306:b0:4bb:6ac0:6dc1 with SMTP id
- 5b1f17b1804b1-4bb887c994cmr454963615e9.2.1795749026005; 
- Thu, 26 Nov 2026 19:10:26 -0800 (PST)
+ bh=/HyskeR6ozbIHnRipu/b8nHaSS+vSLQZc3r+j/AoDYA=;
+ b=Rz1nVrSEigduWxncjhaXxdRlEs7hSwCaHhYKqGG7QZ5d1M5CDo6GBPAJMnWPK+KUkK
+ h+HCcMaJhRPjQVtaJFUn/emPpSuP87qsuKHTAFNXQuBP+0FF59SOqEcGjUuiDf2gBHAO
+ 9LLsNyiOPWMghUp5Offejy13lR3D7/VY2acrzIm3ExE0TdVOf7162grFjrXvuknkgSxJ
+ KJQowQ1UJ7sX5IC8rkAdMzdbHLF1qXcdsp/Qp+SiqYsJPmF09OVvBz0Pr6rwB8fjW5QV
+ i4xBOnzzLnYDYkEB5y/uvs3b9r+mYnprNYzFCW4GWWDrW8hL+2df42qw2218z6DOR6yW
+ TUmg==
+X-Gm-Message-State: APuU4Z8F4iYB9HneQmeuvGipfPdggXCytXJJgxKPmKySmWjMmzsILU5N
+ osgrcOaiDGKXOEuLXB6ApQlNieN4B10gRGsTzLAj7GpLQ+Uqg06rMtCuS+nB4Q66flq+7fQHA2A
+ +N53OahiW4ObyWRB7JFTvdHTUYH7Mjaq53AmReMEx7GiAygbS8rz+mhZmAWq2Oa/CXXd9
+X-Gm-Gg: AZFdTZe4Ce2ZkrmwoZBGW0J9IjTUIM5dgYBMyf6dfFKkUQg+Tn6sAZjkUwvQ2bq8MYp
+ g9iLS09Fa28LHvbGdhbTAUweDsnOdKsNbSJvRnLPwvc4woBh4nXXITp8iieN6klqtC4TeXZpng/
+ tCP8uqkdQJnKRLVIhnGEGCttbaCeeHpJAvJgtodEuxYCZstk01OWJCwV8hBllPFOWlfqhYtTEE6
+ sn7rpF+nYZd5tQBO6s4wJJVob6fnA9M0QGH27Wmr7eVtWkxiFrnaSnxxgCEgRV2eKoxTWqatglS
+ A9j1ReOqpdbgdoYAJJKG+lOsmpkKbh5+SJsSQbEOdnPBa1KXM7FJEWYEW0xSCyeUn66M3xg8jgb
+ a8h4hs6qVhGSwVASqgiiPPfy/mWnKK/GK5TdqZgc0pG9ddPfBM6G+0lL7y8qzo1jzmlYgiIjb0m
+ bnRbbrW+j7P7HnzTTc/8K+CIjU/oMNbaV5C/ubNm749P+toT1zzyPx5dFT2MXoEbHGjEq4H5Mam
+ Q8gA7Zj8Xz3FGlimNIN2Oi8aeEiT4gM0wjqHqeRLXt+dXJNzkF5295oN/y5KvIAIdXh7KTUCKM+
+ qtUuRMJW2Nr/CkrkQgmY62ngBqEEqthfgCv7TgSrd5+UdponzZXHN0GobZrBpYiDJ6tRCL7MA4n
+ sAoNxXVpBzIMj1SoNYvKWeQGwSIUAbaoVxa7h8bIfjAJmLlIbq+1RJEvIwujb4EVjnM00f24xLq
+ g2nvLmTI3yPSFDEUo=
+X-Received: by 2002:a5d:5888:0:b0:487:1ac0:32af with SMTP id
+ ffacd0b85a97d-4abb47b0fb1mr43549077f8f.51.1795749023987; 
+ Thu, 26 Nov 2026 19:10:23 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4bb8849247asm665314085e9.7.2026.11.26.19.10.25
+ ffacd0b85a97d-4ab65cb41f4sm42791441f8f.7.2026.11.26.19.10.23
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 26 Nov 2026 19:10:25 -0800 (PST)
+ Thu, 26 Nov 2026 19:10:23 -0800 (PST)
 X-Google-Original-From: "Gianmarco De Gregori (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
 Date: Fri, 27 Nov 2026 03:10:20 +0000
@@ -116,22 +116,22 @@ To: Ralf Lici <ralf@mandelbit.com>,
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
 X-Gerrit-PatchSet: 4
-X-Gerrit-Change-Id: Ic5c421ec2e9627340924a05509bb8aff0bbf17da
-X-Gerrit-Change-Number: 1983
+X-Gerrit-Change-Id: I0051effe7f0636e30557d9ce92c50c458002f9e6
+X-Gerrit-Change-Number: 1981
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1983?usp=email>
-X-Gerrit-Commit: 3ff284e6947b8fc3d05620d518c71ccd9171a5ca
-In-Reply-To: <gerrit.1791286452000.Ic5c421ec2e9627340924a05509bb8aff0bbf17da@gerrit.openvpn.net>
-References: <gerrit.1791286452000.Ic5c421ec2e9627340924a05509bb8aff0bbf17da@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkxMjg2NDUyMDAwLkljNWM0MjFlYzJlOTYyNzM0MDkyNGEwNTUwOWJiOGFmZjBiYmYxN2RhQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <13a8d17082437c6f14ce9b9e9f8c2ef5bf42ce48-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1981?usp=email>
+X-Gerrit-Commit: 02e1598c759109ca5a6c7176aeb6bf03ecbf0cb3
+In-Reply-To: <gerrit.1791286452000.I0051effe7f0636e30557d9ce92c50c458002f9e6@gerrit.openvpn.net>
+References: <gerrit.1791286452000.I0051effe7f0636e30557d9ce92c50c458002f9e6@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzkxMjg2NDUyMDAwLkkwMDUxZWZmZTdmMDYzNmUzMDU1N2Q5Y2U5MmM1MGM0NTgwMDJmOWU2QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <8b202b576c95177c530d8beb96255d438c68b15d-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.5
 X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xWmM4-000000006rw-41Ps
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco_linux: enable
- asymmetric peer IDs when supported
+X-Headers-End: 1xWmM3-000000003B2-0uZz
+Subject: [Openvpn-devel] [XL] Change in openvpn[master]: dco: detect local
+ kernel capabilities through netlink policies
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -144,10 +144,10 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 From: "Gianmarco De Gregori \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
 Reply-To: gianmarco@mandelbit.com, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, ralf@mandelbit.com
+ openvpn-devel@lists.sourceforge.net, ralf@mandelbit.com, antonio@mandelbit.com
 Cc: "Gianmarco De Gregori \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============1644671918536099921=="
+Content-Type: multipart/mixed; boundary="===============1968425663579859805=="
 X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_HTML_MOSTLY,
@@ -156,1343 +156,3203 @@ X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============1644671918536099921==
+--===============1968425663579859805==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="wQ9/+q8GQEo="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="vTtp8ZEZ2ck="; charset=UTF-8
 
---wQ9/+q8GQEo=
+--vTtp8ZEZ2ck=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: Arne Schwabe=2E
+Attention is currently required from: Arne Schwabe, Gianmarco De Gregori, R=
+alf Lici=2E
 
-Hello Arne Schwabe, =
+Hello Arne Schwabe, Ralf Lici, 
+
+I'd like you to reexamine a c=
+hange=2E Please visit
+
+    https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1981?=
+usp=3Demail
+
+to look at the new patch set (#4)=2E
 
 
-I'd like you to reexamine a change=2E Please visit
-
-    https://gerrit=2E=
-openvpn=2Enet/c/openvpn/+/1983?usp=3Demail
-
-to look at the new patch set (#=
-4)=2E
-
-
-Change subject: dco_linux: enable asymmetric peer IDs when supporte=
-d
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: dco: de=
+tect local kernel capabilities through netlink policies
+=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-dco_linux:=
- enable asymmetric peer IDs when supported
+dco: detect local kernel capabi=
+lities through netlink policies
 
-When notifying ovpn about a new=
- peer, also send the TX peer ID so the
-module can forward packets with the =
-correct peer ID value=2E This
-attribute is optional: if tx_peer_id is missi=
-ng, the module falls back
-to the non-multipeer configuration, where tx_peer=
-_id equals rx_peer_id=2E
+The ovpn module lives in the kernel, so th=
+e attributes it accepts may
+differ from what we were built against=2E CTRL_=
+CMD_GETPOLICY dumps the
+validation policy of a family: which attributes eac=
+h command takes, of
+what type, and for a nested one the sub-policy that val=
+idates it=2E
 
-The attribute is sent only to a kernel that knows=
- it, since older ones
-reject OVPN_CMD_PEER_NEW with EINVAL on an attribute =
-they cannot parse=2E
-Define the first DCO capability, DCO_CAP_ASYM_PEER_ID,=
- as a row in the
-requirement table: the doit policy of OVPN_CMD_PEER_NEW mu=
-st expose
-OVPN_A_PEER_TX_ID as a u32 inside OVPN_A_PEER=2E
+Add a helper to query it, wrapped in dco_probe_capabilities()=
+ so the
+rest of the tree never talks to netlink itself=2E Answering a requi=
+rement
+means following a chain - which policy validates the command, where =
+its
+nested attribute points if it has one, what type the target attribute
+h=
+as there=2E One dump of the whole family answers every requirement: it is
+r=
+ecorded as it arrives and the chains are followed once it is complete=2E
 
-The bit is then=
- consumed=2E It travels in tls_options, so a peer announces
-its own ID only=
- when it can use asymmetric peer-ids, and a server
-replies with its own onl=
-y when the client announced one and the local
-kernel can do it too=2E A pee=
-r that announces nothing leaves the other
-side on symmetric peer-ids, so th=
-ere is nothing to exchange over the
-wire=2E The local ID is generated under=
- the same bit, which also lifts the
-blanket skip tls_multi_init_finalize() =
-applied whenever DCO was enabled=2E
+T=
+he answer has three values rather than two: without "could not ask", a
+netl=
+ink error would look the same as a kernel without the feature=2E
 
-Change-Id: Ic5c421ec2e9627340924a05509=
-bb8aff0bbf17da
-Signed-off-by: Ralf Lici <ralf@mandelbit=2Ecom>
-Signed-off-b=
-y: Gianmarco De Gregori <gianmarco@mandelbit=2Ecom>
+The query=
+ needs uapi headers from 5=2E10 or later=2E Built against older
+ones, it is=
+ left out and dco_probe_capabilities() reports no capability=2E
+
+No capabil=
+ity is defined yet, so the bitmap comes back empty; the rows
+that fill it a=
+rrive with the features that need them=2E The unit test
+feeds hand-built du=
+mps to the pass and checks what each requirement
+resolves to=2E
+
+Change-Id:=
+ I0051effe7f0636e30557d9ce92c50c458002f9e6
+Signed-off-by: Gianmarco De Greg=
+ori <gianmarco@mandelbit=2Ecom>
 ---
-M src/openvpn/dco=
-=2Ec
+M CMakeLists=2Etxt
+M config=2Eh=2Ecmake=
+=2Ein
+M configure=2Eac
 M src/openvpn/dco=2Eh
 M src/openvpn/dco_freebsd=2Ec
-M src/openvpn/dco_=
-internal=2Eh
+=
 M src/openvpn/dco_linux=2Ec
 M src/openvpn/dco_win=2Ec
-M src/op=
-envpn/init=2Ec
-M src/openvpn/ovpn_dco_linux=2Eh
-M src/openvpn/ssl=2Ec
-M src=
-/openvpn/ssl_common=2Eh
-M src/openvpn/ssl_ncp=2Ec
-11 files changed, 130 ins=
-ertions(+), 49 deletions(-)
+M tests/unit_tests/op=
+envpn/Makefile=2Eam
+A tests/unit_tests/openvpn/mock_dco_dependencies=2Ec
+A =
+tests/unit_tests/openvpn/test_dco=2Ec
+10 files changed, 1,006 insertions(+)=
+, 0 deletions(-)
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418=
-/openvpn refs/changes/83/1983/4
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn re=
+fs/changes/81/1981/4
 
-diff --git a/src/openvpn/dco=2Ec b/src/ope=
-nvpn/dco=2Ec
-index 0d1ae67=2E=2E2bcdc78 100644
---- a/src/openvpn/dco=2Ec
-++=
-+ b/src/openvpn/dco=2Ec
-@@ -62,8 +62,10 @@
+diff --git a/CMakeLists=2Etxt b/CMakeLists=2Etxt
+inde=
+x 50b2d68=2E=2Ebb2ea0c 100644
+--- a/CMakeLists=2Etxt
++++ b/CMakeLists=2Etxt=
+
+@@ -19,6 +19,7 @@
+ include(CheckLinkerFlag OPTIONAL)
+ include(CheckTypeSiz=
+e)
+ include(CheckStructHasMember)
++include(CheckCSourceCompiles)
+ include(C=
+Test)
  
- {
-     bool epoch =3D ks->cry=
-pto_options=2Eflags & CO_EPOCH_DATA_KEY_FORMAT;
--    msg(D_DCO_DEBUG, "%s: =
-rx_peer_id=3D%d keyid=3D%d epoch=3D%d, currently %d keys installed",
--     =
-   __func__, multi->dco_rx_peer_id, ks->key_id, epoch, multi->dco_keys_inst=
-alled);
-+    msg(D_DCO_DEBUG,
-+        "%s: rx_peer_id=3D%d tx_peer_id=3D%u=
- keyid=3D%d epoch=3D%d, currently %d keys installed",
-+        __func__, mu=
-lti->dco_rx_peer_id, multi->tx_peer_id, ks->key_id, epoch,
-+        multi->=
-dco_keys_installed);
+ option(UNSUPPORTED_BUILDS "Allow unsupported builds" OFF)
+@@ -205,=
+6 +206,11 @@
+     check_symbol_exists(getpeereid "unistd=2Eh;sys/socket=2Eh=
+" HAVE_GETPEEREID)
+ endif()
  
-     /* Install a key in the PRIMARY slot only when =
-no other key exist=2E
-      * From that moment on, any new key will be inst=
-alled in the SECONDARY
-@@ -515,9 +517,11 @@
- }
++if (ENABLE_LINUXDCO)
++    check_c_source_com=
+piles("#include <linux/genetlink=2Eh>
++int main(void) { return CTRL_ATTR_OP=
+_POLICY; }" HAVE_DECL_CTRL_ATTR_OP_POLICY)
++endif ()
++
+ check_include_files=
+(grp=2Eh HAVE_GRP_H)
+ if (HAVE_GRP_H)
+     check_symbol_exists(getgrnam grp=
+=2Eh HAVE_GETGRNAM)
+@@ -728,6 +734,12 @@
+             )
+     endif ()
  
- bool
--dco_check_pull_opti=
-ons(msglvl_t msglevel, const struct options *o)
-+dco_check_pull_options(msg=
-lvl_t msglevel, const struct tls_multi *multi)
- {
--    if (!o->use_peer_id)=
++  =
+  if (ENABLE_LINUXDCO AND HAVE_DECL_CTRL_ATTR_OP_POLICY)
++        list(APPE=
+ND unit_tests
++            "test_dco"
++            )
++    endif ()
++
+     i=
+f (NOT WIN32 AND ${ENABLE_PKCS11})
+         set(_HAVE_SOFTHSM2 YES)
+       =
+  find_program(P11TOOL p11tool)
+@@ -969,6 +981,14 @@
+             )
+     en=
+dif ()
+ 
++    if (TARGET test_dco)
++        target_sources(test_dco PRIVATE=
 
-+    /* asymmetric peer-ids are negotiated, not pushed, so options=2Euse_p=
-eer_id
-+     * is not yet in sync when this runs */
-+    if (!multi->use_pe=
-er_id)
-     {
-         msg(msglevel, "OPTIONS IMPORT: Server did not reques=
-t DATA_V2 packet "
-                       "format required for data channel=
- offload");
-@@ -549,8 +553,8 @@
-         c->c2=2Etls_multi->dco_rx_peer_id =
-=3D -1;
-     }
- #endif
--    int ret =3D dco_new_peer(&c->c1=2Etuntap->dco, =
-multi->rx_peer_id, sock->sd, NULL,
--                           proto_is_dgr=
-am(sock->info=2Eproto) ? remoteaddr : NULL,
-+    int ret =3D dco_new_peer(&=
-c->c1=2Etuntap->dco, multi->rx_peer_id, multi->tx_peer_id,
-+               =
-            sock->sd, NULL, proto_is_dgram(sock->info=2Eproto) ? remoteaddr=
- : NULL,
-                            NULL, NULL);
-     if (ret < 0)
-     {
++            tests/unit_tests/openvpn/mock_dco_dependencies=2Ec
++         =
+   tests/unit_tests/openvpn/mock_get_random=2Ec
++            src/openvpn/fd=
+misc=2Ec
++            )
++    endif ()
++
+     target_compile_definitions(tes=
+t_dhcp PRIVATE DHCP_UNIT_TEST)
+     target_sources(test_dhcp PRIVATE
+      =
+   tests/unit_tests/openvpn/mock_get_random=2Ec
+diff --git a/config=2Eh=2Ec=
+make=2Ein b/config=2Eh=2Ecmake=2Ein
+index f7818cf=2E=2Eaa21532 100644
+--- a=
+/config=2Eh=2Ecmake=2Ein
++++ b/config=2Eh=2Ecmake=2Ein
+@@ -87,6 +87,9 @@
+ /=
+* Define to 1 if you have the `daemon' function=2E */
+ #cmakedefine HAVE_DA=
+EMON
+ 
++/* Define to 1 if linux/genetlink=2Eh has netlink policy introspect=
+ion (5=2E10) */
++#cmakedefine01 HAVE_DECL_CTRL_ATTR_OP_POLICY
++
+ /* Define =
+to 1 if you have the <direct=2Eh> header file=2E */
+ #cmakedefine HAVE_DIRE=
+CT_H
+ 
+diff --git a/configure=2Eac b/configure=2Eac
+index 05fa964=2E=2Eef05=
+253 100644
+--- a/configure=2Eac
++++ b/configure=2Eac
+@@ -664,6 +664,7 @@
+ 	=
+	;;
+ esac
+ 
++dco_unit_tests=3D"no"
+ if test "$enable_dco" !=3D "no"; then
+ =
+	enable_dco_arg=3D"$enable_dco"
+ 	if test "${enable_iproute2}" =3D "yes"; t=
+hen
+@@ -692,6 +693,12 @@
+ 				OPTIONAL_LIBNL_GENL_CFLAGS=3D"${LIBNL_GENL_CF=
+LAGS}"
+ 				OPTIONAL_LIBNL_GENL_LIBS=3D"${LIBNL_GENL_LIBS}"
+ 
++				dnl
++			=
+	dnl Netlink policy introspection needs uapi headers from 5=2E10
++				dnl
++=
+				AC_CHECK_DECLS([CTRL_ATTR_OP_POLICY], , , [[#include <linux/genetlink=
+=2Eh>]])
++				dco_unit_tests=3D"${ac_cv_have_decl_CTRL_ATTR_OP_POLICY}"
++
+ =
+				AC_DEFINE(ENABLE_DCO, 1, [Enable shared data channel offload])
+ 				AC_=
+MSG_NOTICE([Enabled ovpn-dco (via ovpn kernel module) support for Linux])
+ =
+			fi
+@@ -1340,6 +1347,7 @@
+ AC_SUBST([PLUGIN_AUTH_PAM_LIBS])
+ 
+ AM_CONDITI=
+ONAL([WIN32], [test "${WIN32}" =3D "yes"])
++AM_CONDITIONAL([DCO_UNIT_TESTS]=
+, [test "${dco_unit_tests}" =3D "yes"])
+ AM_CONDITIONAL([GIT_CHECKOUT], [te=
+st "${GIT_CHECKOUT}" =3D "yes"])
+ AM_CONDITIONAL([ENABLE_PLUGIN_AUTH_PAM], =
+[test "${enable_plugin_auth_pam}" =3D "yes"])
+ AM_CONDITIONAL([ENABLE_PLUGI=
+N_DOWN_ROOT], [test "${enable_plugin_down_root}" =3D "yes"])
+diff --git a/s=
+rc/openvpn/dco=2Eh b/src/openvpn/dco=2Eh
+index c435f8c=2E=2Eb0a8621 100644
 =
-@@ -633,6 +637,7 @@
-     const struct context *c =3D &mi->context;
- 
-     u=
-int32_t rx_peer_id =3D c->c2=2Etls_multi->rx_peer_id;
-+    uint32_t tx_peer=
-_id =3D c->c2=2Etls_multi->tx_peer_id;
-     struct sockaddr *remoteaddr, *l=
-ocaladdr =3D NULL;
-     struct sockaddr_storage local =3D { 0 };
-     const=
- socket_descriptor_t sd =3D c->c2=2Elink_sockets[0]->sd;
-@@ -670,7 +675,7 @=
-@
-     }
- 
-     int ret =3D
--        dco_new_peer(&c->c1=2Etuntap->dco, rx_=
-peer_id, sd, localaddr, remoteaddr, vpn_addr4, vpn_addr6);
-+        dco_new=
-_peer(&c->c1=2Etuntap->dco, rx_peer_id, tx_peer_id, sd, localaddr, remotead=
-dr, vpn_addr4, vpn_addr6);
-     if (ret < 0)
-     {
-         return ret;
-di=
-ff --git a/src/openvpn/dco=2Eh b/src/openvpn/dco=2Eh
-index bae239d=2E=2E3dd=
-adad 100644
 --- a/src/openvpn/dco=2Eh
 +++ b/src/openvpn/dco=2Eh
-@@ -46,6 +4=
-6,9 @@
- #define DCO_IROUTE_METRIC  100
- #define DCO_DEFAULT_METRIC 200
- 
-+/=
-** Local DCO capability bits, derived from kernel introspection */
-+#define=
- DCO_CAP_ASYM_PEER_ID (1u << 0) /**< kernel supports OVPN_A_PEER_TX_ID */
-+=
-
- #if defined(ENABLE_DCO)
- 
- /**
-@@ -95,10 +98,10 @@
-  * for the first conf=
-licting option found and return false=2E
-  *
-  * @param msglevel  the msg l=
-evel to use to print the warnings
-- * @param o         the options struct t=
-hat hold the options
-+ * @param multi     the TLS state holding the negotia=
-ted parameters
-  * @return          true if no conflict was detected, false=
- otherwise
-  */
--bool dco_check_pull_options(msglvl_t msglevel, const struc=
-t options *o);
-+bool dco_check_pull_options(msglvl_t msglevel, const struct=
- tls_multi *multi);
- 
- /**
-  * Initialize the DCO context
-@@ -265,6 +268,7 =
-@@
-  *          of them and when it could not be asked
-  */
- unsigned int d=
-co_probe_capabilities(void);
+@@ -254,6 +254,17 @@
+  =
+*/
+ bool
+ dco_supports_epoch_data(const struct context *c);
 +
- #else  /* if defined(ENABLE_DCO) */
++/**
++ * Retu=
+rn a bitmap of DCO_CAP_* bits describing the negotiable features the
++ * lo=
+cal kernel supports=2E Everything DCO does without negotiating is available=
+
++ * regardless=2E Resolved once and reused; platforms without capability p=
+robing
++ * return 0=2E
++ *
++ * @return  bitmask of DCO_CAP_* flags; 0 both =
+when the kernel supports none
++ *          of them and when it could not be=
+ asked
++ */
++unsigned int dco_probe_capabilities(void);
+ #else  /* if defin=
+ed(ENABLE_DCO) */
  
- type=
-def void *dco_context_t;
-@@ -294,7 +298,7 @@
- }
- 
- static inline bool
--dco_=
-check_pull_options(msglvl_t msglevel, const struct options *o)
-+dco_check_p=
-ull_options(msglvl_t msglevel, const struct tls_multi *multi)
+ typedef void *dco_context_t;
+@@ -388,5 +399,11 @@
  {
-     retur=
-n false;
+ =
+    return false;
  }
-@@ -405,5 +409,6 @@
- {
++
++static inline unsigned int
++dco_probe_capabilities(=
+void)
++{
++    return 0;
++}
+ #endif /* defined(ENABLE_DCO) */
+ #endif /* ifn=
+def DCO_H */
+diff --git a/src/openvpn/dco_freebsd=2Ec b/src/openvpn/dco_fre=
+ebsd=2Ec
+index 11b8dff=2E=2E9613c63 100644
+--- a/src/openvpn/dco_freebsd=2E=
+c
++++ b/src/openvpn/dco_freebsd=2Ec
+@@ -707,6 +707,12 @@
      return 0;
  }
-+
- #endif /* defined(E=
-NABLE_DCO) */
- #endif /* ifndef DCO_H */
-diff --git a/src/openvpn/dco_freeb=
-sd=2Ec b/src/openvpn/dco_freebsd=2Ec
-index 8615cf0=2E=2Ee914f4c 100644
---- =
-a/src/openvpn/dco_freebsd=2Ec
-+++ b/src/openvpn/dco_freebsd=2Ec
-@@ -133,9 +=
-133,9 @@
- }
- 
- int
--dco_new_peer(dco_context_t *dco, unsigned int rx_peer_i=
-d, int sd, struct sockaddr *localaddr,
--             struct sockaddr *remot=
-eaddr, const struct in_addr *vpn_ipv4,
--             const struct in6_addr =
-*vpn_ipv6)
-+dco_new_peer(dco_context_t *dco, unsigned int rx_peer_id, unsig=
-ned int tx_peer_id, int sd,
-+             struct sockaddr *localaddr, struc=
-t sockaddr *remoteaddr,
-+             const struct in_addr *vpn_ipv4, const=
- struct in6_addr *vpn_ipv6)
- {
-     struct ifdrv drv;
-     nvlist_t *nvl, *=
-local_nvl, *remote_nvl;
-@@ -143,7 +143,8 @@
- 
-     nvl =3D nvlist_create(0)=
-;
- 
--    msg(D_DCO_DEBUG, "%s: rx-peer-id %u, fd %d", __func__, rx_peer_id,=
- sd);
-+    msg(D_DCO_DEBUG, "%s: rx-peer-id %u, tx-peer-id %u, fd %d",
-+   =
-     __func__, rx_peer_id, tx_peer_id, sd);
- 
-     if (localaddr)
-     {
-di=
-ff --git a/src/openvpn/dco_internal=2Eh b/src/openvpn/dco_internal=2Eh
-inde=
-x a9203163=2E=2Eb4821d3 100644
---- a/src/openvpn/dco_internal=2Eh
-+++ b/src=
-/openvpn/dco_internal=2Eh
-@@ -59,8 +59,8 @@
-  * They are implemented by dco=
-_linux=2Ec
-  */
- 
--int dco_new_peer(dco_context_t *dco, unsigned int rx_pee=
-r_id, socket_descriptor_t sd,
--                 struct sockaddr *localaddr,=
- struct sockaddr *remoteaddr,
-+int dco_new_peer(dco_context_t *dco, unsigne=
-d int rx_peer_id, unsigned int tx_peer_id,
-+                 socket_descrip=
-tor_t sd, struct sockaddr *localaddr, struct sockaddr *remoteaddr,
-        =
-          const struct in_addr *vpn_ipv4, const struct in6_addr *vpn_ipv6);=
-
- 
- int dco_del_peer(dco_context_t *dco, unsigned int rx_peer_id);
-diff --g=
-it a/src/openvpn/dco_linux=2Ec b/src/openvpn/dco_linux=2Ec
-index 4830805=2E=
-=2Ebd10845 100644
---- a/src/openvpn/dco_linux=2Ec
-+++ b/src/openvpn/dco_lin=
-ux=2Ec
-@@ -104,7 +104,8 @@
- }
- 
- /* What the local kernel supports=2E It ca=
-nnot change while we run, so the first
-- * caller resolves it and the rest =
-just read it=2E */
-+ * caller resolves it and the rest just read it=2E That=
- caller is
-+ * do_init_crypto_tls(), which runs before any peer is added=2E=
- */
- static unsigned int dco_caps =3D 0;
- static bool dco_caps_resolved =3D=
- false;
- 
-@@ -127,6 +128,10 @@
-     int expected_type;
- };
- 
-+static const =
-struct ovpn_cap_req dco_capability_reqs[] =3D {
-+    { DCO_CAP_ASYM_PEER_ID=
-, OVPN_CMD_PEER_NEW, OVPN_A_PEER, OVPN_A_PEER_TX_ID, NL_ATTR_TYPE_U32 },
-+}=
-;
-+
- /** the outcome of resolving one capability requirement */
- enum ovpn_=
-cap_status
- {
-@@ -422,17 +427,45 @@
-         return dco_caps;
-     }
- 
--   =
- /* no capability is defined yet: resolve one whose answer we already know =
-*/
--    static const struct ovpn_cap_req self_test =3D { 0, OVPN_CMD_PEER_N=
-EW, OVPN_A_PEER,
--                                                   OVPN_A=
-_PEER_ID, NL_ATTR_TYPE_U32 };
-     struct ovpn_cap_query query;
-     CLEAR(=
-query);
-     int err =3D ovpn_cap_ask(&query);
--    enum ovpn_cap_status st=
-atus =3D err ? OVPN_CAP_UNKNOWN : ovpn_cap_resolve(&query, &self_test);
--  =
-  free(query=2Elinks);
- 
--    msg(D_DCO_DEBUG, "%s: policy introspection se=
-lf-test: %s (status %d, err %d)", __func__,
--        status =3D=3D OVPN_CAP=
-_SUPPORTED ? "ok" : "unexpected", (int)status, err);
-+    for (size_t i =3D=
- 0; i < SIZE(dco_capability_reqs); i++)
-+    {
-+        const struct ovpn_c=
-ap_req *req =3D &dco_capability_reqs[i];
-+
-+        switch (err ? OVPN_CAP_=
-UNKNOWN : ovpn_cap_resolve(&query, req))
-+        {
-+            case OVPN_=
-CAP_SUPPORTED:
-+                dco_caps |=3D req->cap;
-+                br=
-eak;
-+
-+            case OVPN_CAP_UNSUPPORTED:
-+                msg(D_DCO_D=
-EBUG, "%s: kernel does not support DCO capability 0x%x", __func__,
-+       =
-             req->cap);
-+                break;
-+
-+            case OVPN_CA=
-P_UNKNOWN:
-+                /* no CTRL_CMD_GETPOLICY before 5=2E7, no comma=
-nd map before 5=2E10:
-+                 * nothing to warn about */
-+       =
-         if (!err || err =3D=3D -NLE_OPNOTSUPP)
-+                {
-+       =
-             msg(D_DCO_DEBUG,
-+                        "%s: kernel has no n=
-etlink policy introspection, "
-+                        "assuming DCO capab=
-ility 0x%x is unsupported",
-+                        __func__, req->cap);
-+=
-                    break;
-+                }
-+                msg(M_WARN,
 =
-+                    "Note: cannot determine DCO capability 0x%x from the k=
-ernel (%s), "
-+                    "assuming it is unsupported",
-+         =
-           req->cap, nl_geterror(err));
-+                break;
-+        }
-=
-+    }
-+
-+    free(query=2Elinks);
  
-     dco_caps_resolved =3D true;
-     =
-msg(D_DCO_DEBUG, "%s: DCO local capabilities: 0x%x", __func__, dco_caps);
-@=
-@ -581,9 +614,9 @@
- #endif
- 
- int
--dco_new_peer(dco_context_t *dco, unsigne=
-d int rx_peer_id, int sd, struct sockaddr *localaddr,
--             struct =
-sockaddr *remoteaddr, const struct in_addr *vpn_ipv4,
--             const s=
-truct in6_addr *vpn_ipv6)
-+dco_new_peer(dco_context_t *dco, unsigned int rx=
-_peer_id, unsigned int tx_peer_id, int sd,
-+             struct sockaddr *l=
-ocaladdr, struct sockaddr *remoteaddr,
-+             const struct in_addr *=
-vpn_ipv4, const struct in6_addr *vpn_ipv6)
- {
-     struct gc_arena gc =3D g=
-c_new();
-     const char *remotestr =3D "[undefined]";
-@@ -591,7 +624,8 @@
-=
-     {
-         remotestr =3D print_sockaddr(remoteaddr, &gc);
-     }
--    =
-msg(D_DCO_DEBUG, "%s: rx-peer-id %u, fd %d, remote addr: %s", __func__, rx_=
-peer_id, sd, remotestr);
-+    msg(D_DCO_DEBUG, "%s: rx-peer-id %u, tx-peer-=
-id %u, fd %d, remote addr: %s",
-+        __func__, rx_peer_id, tx_peer_id, =
-sd, remotestr);
- 
-     struct nl_msg *nl_msg =3D ovpn_dco_nlmsg_create(dco,=
- OVPN_CMD_PEER_NEW);
-     if (!nl_msg)
-@@ -604,6 +638,13 @@
-     int ret =
-=3D -EMSGSIZE;
- 
-     NLA_PUT_U32(nl_msg, OVPN_A_PEER_ID, rx_peer_id);
-+   =
- /* old kernels reject the whole command if they see an attribute they do n=
-ot
-+     * know=2E This is the same answer the TLS layer used to decide whe=
-ther to
-+     * negotiate an asymmetric ID, so the two cannot disagree */
-+=
-    if (dco_caps & DCO_CAP_ASYM_PEER_ID)
-+    {
-+        NLA_PUT_U32(nl_msg=
-, OVPN_A_PEER_TX_ID, tx_peer_id);
-+    }
-     NLA_PUT_U32(nl_msg, OVPN_A_PE=
-ER_SOCKET, sd);
- 
-     /* Set the remote endpoint if defined (for UDP) */
-@=
-@ -783,12 +824,6 @@
- {
-     dco->ovpn_dco_id =3D resolve_ovpn_netlink_id(M_=
-FATAL);
- 
--    /* nothing consumes the bitmap yet; resolve it here to exerc=
-ise the path */
--    if (check_debug_level(D_DCO_DEBUG))
--    {
--        dc=
-o_probe_capabilities();
--    }
--
-     dco->nl_sock =3D nl_socket_alloc();
- =
-
-     if (!dco->nl_sock)
-diff --git a/src/openvpn/dco_win=2Ec b/src/openvpn=
-/dco_win=2Ec
-index 0ca803d=2E=2E061aace 100644
---- a/src/openvpn/dco_win=2E=
-c
-+++ b/src/openvpn/dco_win=2Ec
-@@ -411,11 +411,12 @@
- }
- 
- int
--dco_new_pe=
-er(dco_context_t *dco, unsigned int rx_peer_id, socket_descriptor_t sd,
--  =
-           struct sockaddr *localaddr, struct sockaddr *remoteaddr,
-+dco_ne=
-w_peer(dco_context_t *dco, unsigned int rx_peer_id, unsigned int tx_peer_id=
-,
-+             socket_descriptor_t sd, struct sockaddr *localaddr, struct =
-sockaddr *remoteaddr,
-              const struct in_addr *vpn_ipv4, const s=
-truct in6_addr *vpn_ipv6)
- {
--    msg(D_DCO_DEBUG, "%s: rx-peer-id %u, fd "=
- SOCKET_PRINTF, __func__, rx_peer_id, sd);
-+    msg(D_DCO_DEBUG, "%s: rx-pe=
-er-id %u, tx-peer-id %u, fd " SOCKET_PRINTF,
-+        __func__, rx_peer_id,=
- tx_peer_id, sd);
- 
-     if (dco->ifmode =3D=3D DCO_MODE_P2P)
-     {
-diff -=
--git a/src/openvpn/init=2Ec b/src/openvpn/init=2Ec
-index 49fcaf6=2E=2Ef5a9c=
-82 100644
---- a/src/openvpn/init=2Ec
-+++ b/src/openvpn/init=2Ec
-@@ -2662,7 =
-+2662,7 @@
-         }
- 
-         /* Check if pushed options are compatible =
-with DCO, if enabled */
--        if (dco_enabled(&c->options) && !dco_check=
-_pull_options(D_PUSH_ERRORS, &c->options))
-+        if (dco_enabled(&c->opt=
-ions) && !dco_check_pull_options(D_PUSH_ERRORS, c->c2=2Etls_multi))
-       =
-  {
-             msg(D_PUSH_ERRORS, "OPTIONS ERROR: pushed options are inco=
-mpatible "
-                                "with data channel offload=2E Us=
-e --disable-dco to connect to "
-@@ -3397,6 +3397,10 @@
- 
-     /* let the TL=
-S engine know if keys have to be installed in DCO or not */
-     to=2Edco_e=
-nabled =3D dco_enabled(options);
-+    if (to=2Edco_enabled)
-+    {
-+       =
- to=2Edco_capabilities =3D dco_probe_capabilities();
-+    }
- 
-     /*
-     =
- * Initialize OpenVPN's master TLS-mode object=2E
-diff --git a/src/openvpn/=
-ovpn_dco_linux=2Eh b/src/openvpn/ovpn_dco_linux=2Eh
-index b3c9ff0=2E=2E28cf=
-97a 100644
---- a/src/openvpn/ovpn_dco_linux=2Eh
-+++ b/src/openvpn/ovpn_dco_=
-linux=2Eh
-@@ -54,6 +54,7 @@
- 	OVPN_A_PEER_LINK_TX_BYTES,
- 	OVPN_A_PEER_LINK=
-_RX_PACKETS,
- 	OVPN_A_PEER_LINK_TX_PACKETS,
-+	OVPN_A_PEER_TX_ID,
- 
- 	__OVPN=
-_A_PEER_MAX,
- 	OVPN_A_PEER_MAX =3D (__OVPN_A_PEER_MAX - 1)
-diff --git a/src=
-/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec
-index 2e058fc=2E=2E12e1374 100644
---=
-- a/src/openvpn/ssl=2Ec
-+++ b/src/openvpn/ssl=2Ec
-@@ -1216,9 +1216,10 @@
-  =
-   tls_session_init(multi, &multi->session[TM_ACTIVE]);
-     tls_session_in=
-it(multi, &multi->session[TM_INITIAL]);
- 
--    if (!multi->opt=2Edco_enable=
-d)
-+    /* Calculate the asymmetric peer-id=2E Leaving it unset is what kee=
-ps us from
-+     * announcing one to the peer, so DCO needs the kernel to s=
-upport it */
-+    if (dco_can_asym_peer_id(&multi->opt))
-     {
--        /*=
- Calculate the asymmetric peer-id */
-         if (multi->rx_peer_id =3D=3D =
-MAX_PEER_ID && multi->session[TM_INITIAL]=2Eopt->mode !=3D MODE_SERVER)
-   =
-      {
-             multi->rx_peer_id =3D (uint32_t)(get_random() % (MAX_P=
-EER_ID - 1));
-@@ -1949,9 +1950,16 @@
- push_peer_info_peerid(struct buffer *=
-out, const struct tls_multi *multi,
-                       const struct tls=
-_session *session)
- {
--    if (multi->rx_peer_id =3D=3D MAX_PEER_ID || sess=
-ion->opt->dco_enabled)
-+    if (multi->rx_peer_id =3D=3D MAX_PEER_ID)
-     =
-{
--        /* No valid peer id or DCO is enabled=2E Cannot use this feature=
- */
-+        /* No valid peer id */
-+        return true;
-+    }
-+
-+    if =
-(!dco_can_asym_peer_id(session->opt))
-+    {
-+        /* DCO is in use but =
-the local kernel cannot do asymmetric peer-ids:
-+         * do not announce=
- our ID so that the peer falls back as well */
-         return true;
-     }=
-
- 
-@@ -2393,16 +2401,18 @@
-     {
-         output_peer_info_env(session->op=
-t->es, multi->peer_info);
-         uint32_t peer_id =3D extract_asymmetric_=
-peer_id(multi->peer_info);
--        if (peer_id !=3D MAX_PEER_ID && !sessio=
-n->opt->dco_enabled)
-+        if (peer_id !=3D MAX_PEER_ID && dco_can_asym_=
-peer_id(session->opt))
-         {
-+            /* set before key_method_2_w=
-rite() runs, so that a server knows
-+             * whether to announce its=
- own ID back */
-             multi->tx_peer_id =3D peer_id;
-             mu=
-lti->use_asymmetric_peer_id =3D true;
-             multi->use_peer_id =3D t=
-rue;
-         }
-         else
-         {
--            /* Peer has no suppor=
-t for asymmetric peer-id, and DCO currently
--             * can only handle=
- symmetric peer IDs */
-+            /* the peer announced nothing, or we ca=
-nnot use asymmetric peer-ids
-+             * locally: stay symmetric */
-   =
-          multi->tx_peer_id =3D multi->rx_peer_id;
-         }
-     }
-diff -=
--git a/src/openvpn/ssl_common=2Eh b/src/openvpn/ssl_common=2Eh
-index 7fda55=
-2=2E=2E4a09cb9 100644
---- a/src/openvpn/ssl_common=2Eh
-+++ b/src/openvpn/ss=
-l_common=2Eh
-@@ -455,12 +455,24 @@
-     size_t ekm_label_size;
-     size_t =
-ekm_size;
- 
--    bool dco_enabled; /**< Whether keys have to be installed i=
-n DCO or not */
-+    bool dco_enabled;              /**< Whether keys have =
-to be installed in DCO or not */
-+    unsigned int dco_capabilities; /**< l=
-ocal kernel DCO capability bitmap (DCO_CAP_*) */
- 
-     /** The app custom =
-control protocols we should announce as supported */
-     const char *acc_p=
-rotocols;
- };
- 
-+/**
-+ * Whether asymmetric peer-ids can be used: either DC=
-O is not in the way, or the
-+ * local kernel supports them=2E When false we=
- neither generate nor announce an
-+ * ID, so the remote peer falls back as =
-well=2E
-+ */
-+static inline bool
-+dco_can_asym_peer_id(const struct tls_opt=
-ions *o)
++unsigned int
++dco_probe_capabilities(void)
 +{
-+    return !o->dco_enabled || (o->dco_capabilities & DCO_CAP_A=
-SYM_PEER_ID);
++    return 0;
 +}
 +
- /** @addtogroup control_processor
-  *  @{ */
- /** @name=
- Index of key_state objects within a tls_session structure
-diff --git a/src=
-/openvpn/ssl_ncp=2Ec b/src/openvpn/ssl_ncp=2Ec
-index 7b15f5f=2E=2Efdec002 1=
-00644
---- a/src/openvpn/ssl_ncp=2Ec
-+++ b/src/openvpn/ssl_ncp=2Ec
-@@ -403,7=
- +403,7 @@
- {
-     /* will return 0 if peer_info is null */
-     const unsi=
-gned int iv_proto_peer =3D extract_iv_proto(multi->peer_info);
--    const u=
-nsigned int tx_peer_id =3D extract_asymmetric_peer_id(multi->peer_info);
-+ =
-   uint32_t tx_peer_id =3D extract_asymmetric_peer_id(multi->peer_info);
- 
+ bool
 =
-     /* The other peer does not support P2P NCP */
-     if (!(iv_proto_peer=
- & IV_PROTO_NCP_P2P))
-@@ -411,6 +411,14 @@
-         return;
-     }
+ dco_available(msglvl_t msglevel)
+ {
+diff --git a/src/openvpn/dco_linux=2Ec=
+ b/src/openvpn/dco_linux=2Ec
+index 3a55b6e=2E=2Efefc517 100644
+--- a/src/op=
+envpn/dco_linux=2Ec
++++ b/src/openvpn/dco_linux=2Ec
+@@ -103,6 +103,361 @@
+ =
+    return ret;
+ }
  
-+    i=
-f (!dco_can_asym_peer_id(session->opt))
++/* What the local kernel supports=2E It cannot change=
+ while we run, so the first
++ * caller resolves it and the rest just read i=
+t=2E */
++static unsigned int dco_caps =3D 0;
++static bool dco_caps_resolved=
+ =3D false;
++
++#if HAVE_DECL_CTRL_ATTR_OP_POLICY
++/*
++ * Netlink policy int=
+rospection: the ovpn module lives in the kernel, so the
++ * attributes it a=
+ccepts may differ from what we were built against=2E
++ * CTRL_CMD_GETPOLICY=
+ says which attributes each command takes and of what type=2E
++ */
++
++/* On=
+e row per capability, all resolved from the same dump=2E A row can
++ * only=
+ ask for an attribute the dump reports: UNSPEC and REJECT ones never
++ * ap=
+pear, and before Linux 7=2E4 neither do BE16/BE32 ones (b785f5c56fb3)=2E */=
+
++struct ovpn_cap_req
++{
++    unsigned int cap;
++    uint16_t cmd;
++    uin=
+t16_t nested_attr; /* 0 if target_attr is not nested */
++    uint16_t targe=
+t_attr;
++    int expected_type;
++};
++
++/** the outcome of resolving one cap=
+ability requirement */
++enum ovpn_cap_status
++{
++    OVPN_CAP_UNKNOWN,     =
+/**< the question could not be asked */
++    OVPN_CAP_SUPPORTED,   /**< the=
+ kernel accepts the attribute */
++    OVPN_CAP_UNSUPPORTED, /**< the kernel=
+ answered, and does not accept it */
++};
++
++/* The command map is kept with=
+ the policies under this index: there `id` is a
++ * command and `nested` th=
+e policy of its doit=2E -1 means "not reported"=2E */
++#define OVPN_CAP_CMD=
+_MAP (-2)
++
++/* ovpn on Linux 7=2E3 reports 77 links */
++#define OVPN_CAP_I=
+NITIAL_LINKS 128
++
++/* inside `policy`, attribute `id` has type `type` and,=
+ if nested, is
++ * validated by policy `nested` */
++struct ovpn_cap_link
++{=
+
++    int policy;
++    uint16_t id;
++    int type;
++    int nested;
++};
++
++=
+struct ovpn_cap_query
++{
++    struct ovpn_cap_link *links;
++    size_t n_li=
+nks;
++    size_t max_links;
++
++    bool cmd_map; /* the dump carried a comm=
+and map */
++    int err;      /* a message we could not parse, or no memory=
+ to record it */
++};
++
++static struct nla_policy ovpn_cap_ctrl_policy[CTRL_=
+ATTR_MAX + 1] =3D {
++    [CTRL_ATTR_POLICY] =3D { =2Etype =3D NLA_NESTED },=
+
++    [CTRL_ATTR_OP_POLICY] =3D { =2Etype =3D NLA_NESTED },
++};
++
++static s=
+truct nla_policy ovpn_cap_op_policy[CTRL_ATTR_POLICY_DUMP_MAX + 1] =3D {
++ =
+   [CTRL_ATTR_POLICY_DO] =3D { =2Etype =3D NLA_U32 },
++};
++
++static struct =
+nla_policy ovpn_cap_attr_policy[NL_POLICY_TYPE_ATTR_MAX + 1] =3D {
++    [NL=
+_POLICY_TYPE_ATTR_TYPE] =3D { =2Etype =3D NLA_U32 },
++    [NL_POLICY_TYPE_A=
+TTR_POLICY_IDX] =3D { =2Etype =3D NLA_U32 },
++};
++
++static int
++ovpn_cap_ad=
+d_link(struct ovpn_cap_query *query, int policy, uint16_t id, int type, int=
+ nested)
++{
++    if (query->n_links =3D=3D query->max_links)
 +    {
-+        /* We cannot use as=
-ymmetric peer-ids locally: ignore the announced
-+         * ID and use the =
-legacy shared peer-id selection below */
-+        tx_peer_id =3D MAX_PEER_I=
-D;
-+        multi->use_asymmetric_peer_id =3D false;
++      =
+  size_t max_links =3D query->max_links ? 2 * query->max_links : OVPN_CAP_I=
+NITIAL_LINKS;
++        struct ovpn_cap_link *links =3D realloc(query->links=
+, max_links * sizeof(*links));
++        if (!links)
++        {
++           =
+ return -NLE_NOMEM;
++        }
++
++        query->links =3D links;
++        =
+query->max_links =3D max_links;
 +    }
 +
-     if (iv_p=
-roto_peer & IV_PROTO_DATA_V2)
-     {
-         multi->use_peer_id =3D true;
++    query->links[query->n_links++=
+] =3D (struct ovpn_cap_link){ policy, id, type, nested };
++
++    return 0;
 =
-@@ -441,8 +449,7 @@
-     if (multi->use_peer_id)
-     {
-         /* The asy=
-mmetric peer-id trumps on the EKM generated ones */
--        if ((iv_proto_=
-peer & IV_PROTO_TLS_KEY_EXPORT)
--            && (tx_peer_id !=3D MAX_PEER_I=
-D) && !multi->opt=2Edco_enabled)
-+        if ((iv_proto_peer & IV_PROTO_TLS=
-_KEY_EXPORT) && (tx_peer_id !=3D MAX_PEER_ID))
-         {
-             mult=
-i->tx_peer_id =3D tx_peer_id;
-             multi->use_asymmetric_peer_id =
-=3D true;
++}
++
++static const struct ovpn_cap_link *
++ovpn_cap_find(const struct ovpn_=
+cap_query *query, int policy, uint16_t id)
++{
++    for (size_t i =3D 0; i <=
+ query->n_links; i++)
++    {
++        if (query->links[i]=2Epolicy =3D=3D p=
+olicy && query->links[i]=2Eid =3D=3D id)
++        {
++            return &qu=
+ery->links[i];
++        }
++    }
++
++    return NULL;
++}
++
++/*
++ * One messa=
+ge of the dump carries either the command map or a slice of one
++ * policy=
+=2E Everything is recorded and the chain is followed only once the
++ * dump=
+ is complete, so the order of the messages does not matter=2E
++ */
++static =
+int
++ovpn_cap_query_cb(struct nl_msg *msg, void *arg)
++{
++    struct ovpn_c=
+ap_query *query =3D arg;
++    struct nlattr *tb[CTRL_ATTR_MAX + 1];
++    co=
+nst struct genlmsghdr *ghdr =3D nlmsg_data(nlmsg_hdr(msg));
++
++    query->e=
+rr =3D nla_parse(tb, CTRL_ATTR_MAX, genlmsg_attrdata(ghdr, 0),
++           =
+                genlmsg_attrlen(ghdr, 0), ovpn_cap_ctrl_policy);
++    if (q=
+uery->err)
++    {
++        return NL_STOP;
++    }
++
++    /* CTRL_ATTR_OP_PO=
+LICY: which policy validates the doit of each command */
++    if (tb[CTRL_A=
+TTR_OP_POLICY])
++    {
++        const struct nlattr *nla_cmd;
++        int =
+rem_cmd;
++
++        query->cmd_map =3D true;
++
++        nla_for_each_nested=
+(nla_cmd, tb[CTRL_ATTR_OP_POLICY], rem_cmd)
++        {
++            struct =
+nlattr *tb_cmd[CTRL_ATTR_POLICY_DUMP_MAX + 1];
++
++            query->err =
+=3D nla_parse(tb_cmd, CTRL_ATTR_POLICY_DUMP_MAX, nla_data(nla_cmd),
++      =
+                             nla_len(nla_cmd), ovpn_cap_op_policy);
++      =
+      if (query->err)
++            {
++                return NL_STOP;
++    =
+        }
++
++            if (tb_cmd[CTRL_ATTR_POLICY_DO])
++            {
++ =
+               query->err =3D ovpn_cap_add_link(query, OVPN_CAP_CMD_MAP, (u=
+int16_t)nla_type(nla_cmd),
++                                               =
+-1, (int)nla_get_u32(tb_cmd[CTRL_ATTR_POLICY_DO]));
++                if (qu=
+ery->err)
++                {
++                    return NL_STOP;
++        =
+        }
++            }
++        }
++    }
++
++    /* CTRL_ATTR_POLICY: whic=
+h attributes each policy accepts */
++    if (!tb[CTRL_ATTR_POLICY])
++    {
+=
++        return NL_OK;
++    }
++
++    const struct nlattr *nla_policy;
++    =
+int rem_policy;
++
++    nla_for_each_nested(nla_policy, tb[CTRL_ATTR_POLICY]=
+, rem_policy)
++    {
++        struct nlattr *nla_attr;
++        int rem_att=
+r;
++        int policy_id =3D nla_type(nla_policy);
++
++        nla_for_each=
+_nested(nla_attr, nla_policy, rem_attr)
++        {
++            struct nlat=
+tr *tb_attr[NL_POLICY_TYPE_ATTR_MAX + 1];
++            int attr_id =3D nla_=
+type(nla_attr);
++            int type =3D -1;
++            int nested =3D -=
+1;
++
++            query->err =3D nla_parse_nested(tb_attr, NL_POLICY_TYPE_A=
+TTR_MAX, nla_attr,
++                                          ovpn_cap_attr=
+_policy);
++            if (query->err)
++            {
++                retu=
+rn NL_STOP;
++            }
++
++            if (tb_attr[NL_POLICY_TYPE_ATTR_T=
+YPE])
++            {
++                type =3D (int)nla_get_u32(tb_attr[NL_=
+POLICY_TYPE_ATTR_TYPE]);
++            }
++            if (tb_attr[NL_POLICY_=
+TYPE_ATTR_POLICY_IDX])
++            {
++                nested =3D (int)nla_=
+get_u32(tb_attr[NL_POLICY_TYPE_ATTR_POLICY_IDX]);
++            }
++
++       =
+     query->err =3D ovpn_cap_add_link(query, policy_id, (uint16_t)attr_id, =
+type, nested);
++            if (query->err)
++            {
++               =
+ return NL_STOP;
++            }
++        }
++    }
++
++    return NL_OK;
++}
++=
+
++/* Dump the policies of the family into query->links=2E Returns 0, or the=
+
++ * netlink error that kept us from reading it all=2E */
++static int
++ovpn=
+_cap_ask(struct ovpn_cap_query *query)
++{
++    struct nl_msg *nl_msg =3D NU=
+LL;
++    int ret =3D 0;
++
++    struct nl_sock *nl_sock =3D nl_socket_alloc(=
+);
++    if (!nl_sock)
++    {
++        return -NLE_NOMEM;
++    }
++
++    ret =
+=3D genl_connect(nl_sock);
++    if (ret < 0)
++    {
++        goto out;
++   =
+ }
++    set_cloexec(nl_socket_get_fd(nl_sock));
++
++    nl_msg =3D nlmsg_all=
+oc();
++    if (!nl_msg)
++    {
++        ret =3D -NLE_NOMEM;
++        goto o=
+ut;
++    }
++
++    /* nlctrl has a fixed family id, so there is nothing to r=
+esolve first=2E
++     * Unlike CTRL_CMD_GETFAMILY, CTRL_CMD_GETPOLICY does =
+not load the module:
++     * this relies on dco_available() having resolved=
+ the family already=2E */
++    if (!genlmsg_put(nl_msg, NL_AUTO_PORT, NL_AU=
+TO_SEQ, GENL_ID_CTRL, 0, NLM_F_DUMP,
++                     CTRL_CMD_GETPOLI=
+CY, 0))
++    {
++        ret =3D -NLE_MSGSIZE;
++        goto out;
++    }
++
++=
+    ret =3D nla_put_string(nl_msg, CTRL_ATTR_FAMILY_NAME, OVPN_FAMILY_NAME)=
+;
++    if (ret < 0)
++    {
++        goto out;
++    }
++
++    ret =3D nl_sock=
+et_modify_cb(nl_sock, NL_CB_VALID, NL_CB_CUSTOM, ovpn_cap_query_cb, query);=
+
++    if (ret < 0)
++    {
++        goto out;
++    }
++
++    ret =3D nl_send_=
+auto(nl_sock, nl_msg);
++    if (ret < 0)
++    {
++        goto out;
++    }
++=
+
++    ret =3D nl_recvmsgs_default(nl_sock);
++    if (ret >=3D 0)
++    {
++  =
+      ret =3D query->err;
++    }
++
++out:
++    nlmsg_free(nl_msg);
++    nl_s=
+ocket_free(nl_sock);
++
++    return ret < 0 ? ret : 0;
++}
++
++/*
++ * Decide w=
+hether the kernel supports the requirement, from the links the pass
++ * col=
+lected=2E A link the kernel never mentioned is a no=2E A dump without a
++ *=
+ command map is not an answer either way, and is reported as such, but the
+=
++ * capability stays off just the same=2E
++ */
++static enum ovpn_cap_status=
+
++ovpn_cap_resolve(const struct ovpn_cap_query *query, const struct ovpn_ca=
+p_req *req)
++{
++    /* no command map: the dump cannot say which policy val=
+idates the command */
++    if (!query->cmd_map)
++    {
++        return OVPN=
+_CAP_UNKNOWN;
++    }
++
++    /* a link is missing: the command, the containe=
+r or the target is not there */
++    const struct ovpn_cap_link *link =3D o=
+vpn_cap_find(query, OVPN_CAP_CMD_MAP, req->cmd);
++    if (link && req->nest=
+ed_attr)
++    {
++        link =3D ovpn_cap_find(query, link->nested, req->n=
+ested_attr);
++    }
++    if (link)
++    {
++        link =3D ovpn_cap_find(q=
+uery, link->nested, req->target_attr);
++    }
++    if (!link)
++    {
++     =
+   return OVPN_CAP_UNSUPPORTED;
++    }
++
++    /* the whole chain is there: =
+a yes only if the attribute has the type we
++     * would be writing into i=
+t */
++    return (link->type =3D=3D req->expected_type) ? OVPN_CAP_SUPPORTE=
+D : OVPN_CAP_UNSUPPORTED;
++}
++
++unsigned int
++dco_probe_capabilities(void)
+=
++{
++    if (dco_caps_resolved)
++    {
++        return dco_caps;
++    }
++
++ =
+   /* no capability is defined yet: resolve one whose answer we already kno=
+w */
++    static const struct ovpn_cap_req self_test =3D { 0, OVPN_CMD_PEER=
+_NEW, OVPN_A_PEER,
++                                                   OVPN=
+_A_PEER_ID, NL_ATTR_TYPE_U32 };
++    struct ovpn_cap_query query;
++    CLEA=
+R(query);
++    int err =3D ovpn_cap_ask(&query);
++    enum ovpn_cap_status =
+status =3D err ? OVPN_CAP_UNKNOWN : ovpn_cap_resolve(&query, &self_test);
++=
+    free(query=2Elinks);
++
++    msg(D_DCO_DEBUG, "%s: policy introspection =
+self-test: %s (status %d, err %d)", __func__,
++        status =3D=3D OVPN_C=
+AP_SUPPORTED ? "ok" : "unexpected", (int)status, err);
++
++    dco_caps_reso=
+lved =3D true;
++    msg(D_DCO_DEBUG, "%s: DCO local capabilities: 0x%x", __=
+func__, dco_caps);
++
++    return dco_caps;
++}
++
++#else  /* if HAVE_DECL_CTR=
+L_ATTR_OP_POLICY */
++
++unsigned int
++dco_probe_capabilities(void)
++{
++    i=
+f (!dco_caps_resolved)
++    {
++        msg(D_DCO_DEBUG,
++            "%s: b=
+uilt without netlink policy introspection, no DCO capability can be detecte=
+d",
++            __func__);
++        dco_caps_resolved =3D true;
++    }
++
++=
+    return dco_caps;
++}
++
++#endif /* if HAVE_DECL_CTRL_ATTR_OP_POLICY */
++
+=
+ static struct nl_msg *
+ ovpn_dco_nlmsg_create(const dco_context_t *dco, ui=
+nt8_t cmd)
+ {
+@@ -428,6 +783,12 @@
+ {
+     dco->ovpn_dco_id =3D resolve_ovp=
+n_netlink_id(M_FATAL);
+ 
++    /* nothing consumes the bitmap yet; resolve i=
+t here to exercise the path */
++    if (check_debug_level(D_DCO_DEBUG))
++  =
+  {
++        dco_probe_capabilities();
++    }
++
+     dco->nl_sock =3D nl_so=
+cket_alloc();
+ 
+     if (!dco->nl_sock)
+diff --git a/src/openvpn/dco_win=2E=
+c b/src/openvpn/dco_win=2Ec
+index 6074552=2E=2E0f2b9eb 100644
+--- a/src/ope=
+nvpn/dco_win=2Ec
++++ b/src/openvpn/dco_win=2Ec
+@@ -612,6 +612,12 @@
+     re=
+turn 0;
+ }
+ 
++unsigned int
++dco_probe_capabilities(void)
++{
++    return 0;
+=
++}
++
+ bool
+ dco_available(msglvl_t msglevel)
+ {
+diff --git a/tests/unit_tes=
+ts/openvpn/Makefile=2Eam b/tests/unit_tests/openvpn/Makefile=2Eam
+index e34=
+04754=2E=2Ed1dfac9 100644
+--- a/tests/unit_tests/openvpn/Makefile=2Eam
++++ =
+b/tests/unit_tests/openvpn/Makefile=2Eam
+@@ -40,6 +40,12 @@
+ endif
+ endif
+ =
+
++if HAVE_SITNL
++if DCO_UNIT_TESTS
++test_binaries +=3D dco_testdriver
++endi=
+f
++endif
++
+ if !CROSS_COMPILING
+ TESTS =3D $(test_binaries)
+ endif
+@@ -452,=
+4 +458,16 @@
+ 	$(top_srcdir)/src/openvpn/run_command=2Ec \
+ 	$(top_srcdir)/=
+src/openvpn/socket_util=2Ec
+ 
++dco_testdriver_CFLAGS  =3D \
++	-I$(top_srcdi=
+r)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/openvpn \
++	@TEST=
+_CFLAGS@ $(OPTIONAL_CRYPTO_CFLAGS)
++dco_testdriver_LDFLAGS =3D @TEST_LDFLAG=
+S@ $(OPTIONAL_CRYPTO_LIBS)
++dco_testdriver_SOURCES =3D test_dco=2Ec \
++	moc=
+k_msg=2Ec mock_msg=2Eh mock_dco_dependencies=2Ec mock_get_random=2Ec test_c=
+ommon=2Eh \
++	$(top_srcdir)/src/compat/compat-strlcpy=2Ec \
++	$(top_srcdir)=
+/src/openvpn/buffer=2Ec \
++	$(top_srcdir)/src/openvpn/fdmisc=2Ec \
++	$(top_=
+srcdir)/src/openvpn/platform=2Ec \
++	$(top_srcdir)/src/openvpn/win32-util=
+=2Ec
++
+ build-tests-local: $(check_PROGRAMS)
+diff --git a/tests/unit_tests/=
+openvpn/mock_dco_dependencies=2Ec b/tests/unit_tests/openvpn/mock_dco_depen=
+dencies=2Ec
+new file mode 100644
+index 0000000=2E=2Ee7f20f5
+--- /dev/null
++=
+++ b/tests/unit_tests/openvpn/mock_dco_dependencies=2Ec
+@@ -0,0 +1,80 @@
++/=
+*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *        =
+     over a single UDP port, with support for SSL/TLS-based
++ *            =
+ session authentication and key exchange,
++ *             packet encryption=
+, packet authentication, and
++ *             packet compression=2E
++ *
++ * =
+ Copyright (C) 2002-2026 OpenVPN Inc <sales@openvpn=2Enet>
++ *  Copyright (=
+C) 2026 Gianmarco De Gregori <gianmarco@mandelbit=2Ecom>
++ *
++ *  This prog=
+ram is free software; you can redistribute it and/or modify
++ *  it under t=
+he terms of the GNU General Public License version 2
++ *  as published by t=
+he Free Software Foundation=2E
++ *
++ *  This program is distributed in the =
+hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even th=
+e implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURP=
+OSE=2E  See the
++ *  GNU General Public License for more details=2E
++ *
++ *=
+  You should have received a copy of the GNU General Public License along
++=
+ *  with this program; if not, see <https://www=2Egnu=2Eorg/licenses/>=2E
++=
+ */
++
++/*
++ *  Stubs for what dco_linux=2Ec drags in but capability probing=
+ never reaches:
++ *  the data path, the event loop and the signal machinery=
+=2E
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config=2Eh"
++#endif
++
++#include=
+ "syshead=2Eh"
++#include "dco=2Eh"
++#include "crypto_backend=2Eh"
++#include=
+ "forward=2Eh"
++#include "multi=2Eh"
++#include "networking=2Eh"
++#include "=
+socket_util=2Eh"
++
++void
++multi_process_incoming_dco(dco_context_t *dco)
++{=
+
++}
++
++void
++process_incoming_dco(dco_context_t *dco)
++{
++}
++
++void
++regist=
+er_signal(struct signal_info *si, int signum, const char *signal_text)
++{
++=
+}
++
++int
++net_iface_new(const openvpn_net_ctx_t *ctx, const openvpn_net_ifa=
+ce_t *iface, const char *type,
++              const void *arg)
++{
++    retu=
+rn 0;
++}
++
++int
++net_iface_del(const openvpn_net_ctx_t *ctx, const openvpn_=
+net_iface_t *iface)
++{
++    return 0;
++}
++
++unsigned int
++cipher_kt_key_siz=
+e(const char *ciphername)
++{
++    return 0;
++}
++
++const char *
++print_socka=
+ddr_ex(const struct sockaddr *addr, const char *separator, const unsigned i=
+nt flags,
++                  struct gc_arena *gc)
++{
++    return "[mock]";
+=
++}
+diff --git a/tests/unit_tests/openvpn/test_dco=2Ec b/tests/unit_tests/op=
+envpn/test_dco=2Ec
+new file mode 100644
+index 0000000=2E=2Ebd874bf
+--- /dev=
+/null
++++ b/tests/unit_tests/openvpn/test_dco=2Ec
+@@ -0,0 +1,487 @@
++/*
++ *=
+  OpenVPN -- An application to securely tunnel IP networks
++ *             =
+over a single UDP port, with support for SSL/TLS-based
++ *             sess=
+ion authentication and key exchange,
++ *             packet encryption, pac=
+ket authentication, and
++ *             packet compression=2E
++ *
++ *  Copy=
+right (C) 2002-2026 OpenVPN Inc <sales@openvpn=2Enet>
++ *  Copyright (C) 20=
+26 Gianmarco De Gregori <gianmarco@mandelbit=2Ecom>
++ *
++ *  This program i=
+s free software; you can redistribute it and/or modify
++ *  it under the te=
+rms of the GNU General Public License version 2
++ *  as published by the Fr=
+ee Software Foundation=2E
++ *
++ *  This program is distributed in the hope =
+that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the imp=
+lied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=
+=2E  See the
++ *  GNU General Public License for more details=2E
++ *
++ *  Y=
+ou should have received a copy of the GNU General Public License along
++ * =
+ with this program; if not, see <https://www=2Egnu=2Eorg/licenses/>=2E
++ */=
+
++
++/*
++ *  Unit tests for the DCO capability queries=2E
++ *
++ *  Resolving=
+ a requirement is a pass over a policy dump that records what it
++ *  repor=
+ts, followed by a walk along what the pass recorded=2E The pass is fed
++ * =
+ dumps built by hand, which cover what would otherwise need a particular
++ =
+*  kernel=2E
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config=2Eh"
++#endif
++
+=
++#include "syshead=2Eh"
++
++#include <stdarg=2Eh>
++#include <setjmp=2Eh>
++#i=
+nclude <cmocka=2Eh>
++
++#include "dco_linux=2Ec"
++
++#define CMD_POLICY   4
++=
+#define SUB_POLICY   9
++#define OTHER_POLICY 7
++
++/* the bit is never read =
+here, only the chain that would set it */
++static const struct ovpn_cap_req=
+ test_req =3D { =2Ecap =3D 1u,
++                                           =
+   =2Ecmd =3D OVPN_CMD_PEER_NEW,
++                                         =
+     =2Enested_attr =3D OVPN_A_PEER,
++                                     =
+         =2Etarget_attr =3D OVPN_A_PEER_KEEPALIVE_INTERVAL,
++              =
+                                =2Eexpected_type =3D NL_ATTR_TYPE_U32 };
++
+=
++/* the same requirement without a container: the target sits in the comman=
+d's
++ * own policy */
++static const struct ovpn_cap_req flat_req =3D { =2Ec=
+ap =3D 1u,
++                                              =2Ecmd =3D OVPN_C=
+MD_PEER_NEW,
++                                              =2Enested_attr =
+=3D 0,
++                                              =2Etarget_attr =3D OV=
+PN_A_IFINDEX,
++                                              =2Eexpected_ty=
+pe =3D NL_ATTR_TYPE_U32 };
++
++static struct ovpn_cap_query
++new_query(void)=
+
++{
++    struct ovpn_cap_query query;
++
++    CLEAR(query);
++    return quer=
+y;
++}
++
++/* a CTRL_ATTR_OP_POLICY message saying which policy validates `cm=
+d` */
++static struct nl_msg *
++msg_op_policy(uint16_t cmd, uint32_t do_poli=
+cy)
++{
++    struct nl_msg *msg =3D nlmsg_alloc();
++    struct nlattr *ops, =
+*op;
++
++    assert_non_null(msg);
++    assert_non_null(genlmsg_put(msg, NL_=
+AUTO_PORT, NL_AUTO_SEQ, 0, 0, 0, CTRL_CMD_GETPOLICY, 0));
++
++    ops =3D nl=
+a_nest_start(msg, CTRL_ATTR_OP_POLICY);
++    op =3D nla_nest_start(msg, cmd=
+);
++    assert_int_equal(nla_put_u32(msg, CTRL_ATTR_POLICY_DO, do_policy), =
+0);
++    nla_nest_end(msg, op);
++    nla_nest_end(msg, ops);
++
++    return =
+msg;
++}
++
++/* one attribute of a policy: its id, which field of its descrip=
+tor to set,
++ * and the value to put there */
++struct attr_desc
++{
++    uin=
+t16_t attr_id;
++    int field;
++    uint32_t value;
++};
++
++/* a CTRL_ATTR_P=
+OLICY message describing `n` attributes of one policy */
++static struct nl_=
+msg *
++msg_policy_attrs(uint16_t policy_id, const struct attr_desc *descs, =
+size_t n)
++{
++    struct nl_msg *msg =3D nlmsg_alloc();
++    struct nlattr =
+*policies, *policy, *attr;
++
++    assert_non_null(msg);
++    assert_non_nul=
+l(genlmsg_put(msg, NL_AUTO_PORT, NL_AUTO_SEQ, 0, 0, 0, CTRL_CMD_GETPOLICY, =
+0));
++
++    policies =3D nla_nest_start(msg, CTRL_ATTR_POLICY);
++    policy=
+ =3D nla_nest_start(msg, policy_id);
++    for (size_t i =3D 0; i < n; i++)
+=
++    {
++        attr =3D nla_nest_start(msg, descs[i]=2Eattr_id);
++        =
+assert_int_equal(nla_put_u32(msg, descs[i]=2Efield, descs[i]=2Evalue), 0);
+=
++        nla_nest_end(msg, attr);
++    }
++    nla_nest_end(msg, policy);
++ =
+   nla_nest_end(msg, policies);
++
++    return msg;
++}
++
++/* the shape the k=
+ernel actually sends: one attribute per message */
++static struct nl_msg *
+=
++msg_policy_attr(uint16_t policy_id, uint16_t attr_id, int field, uint32_t =
+value)
++{
++    const struct attr_desc one =3D { attr_id, field, value };
++
+=
++    return msg_policy_attrs(policy_id, &one, 1);
++}
++
++static void
++feed(s=
+truct ovpn_cap_query *query, struct nl_msg *msg)
++{
++    assert_int_equal(o=
+vpn_cap_query_cb(msg, query), NL_OK);
++    nlmsg_free(msg);
++}
++
++/* Walk t=
+he whole chain, with both policies carrying attributes we are not
++ * after=
+ and the ones we are neither first nor last, so that the pass has to
++ * sk=
+ip past them rather than stop at the first mismatch=2E */
++static void
++fee=
+d_full_chain(struct ovpn_cap_query *query)
++{
++    const struct attr_desc c=
+md_attrs[] =3D {
++        { OVPN_A_IFINDEX, NL_POLICY_TYPE_ATTR_TYPE, NL_AT=
+TR_TYPE_U32 },
++        { OVPN_A_PEER, NL_POLICY_TYPE_ATTR_POLICY_IDX, SUB_=
+POLICY },
++        { OVPN_A_KEYCONF, NL_POLICY_TYPE_ATTR_TYPE, NL_ATTR_TYPE=
+_NESTED },
++    };
++    const struct attr_desc sub_attrs[] =3D {
++        {=
+ OVPN_A_PEER_ID, NL_POLICY_TYPE_ATTR_TYPE, NL_ATTR_TYPE_U32 },
++        { O=
+VPN_A_PEER_REMOTE_PORT, NL_POLICY_TYPE_ATTR_TYPE, NL_ATTR_TYPE_U16 },
++    =
+    { test_req=2Etarget_attr, NL_POLICY_TYPE_ATTR_TYPE, NL_ATTR_TYPE_U32 },=
+
++        { OVPN_A_PEER_LOCAL_PORT, NL_POLICY_TYPE_ATTR_TYPE, NL_ATTR_TYPE_=
+U16 },
++    };
++
++    feed(query, msg_op_policy(OVPN_CMD_PEER_NEW, CMD_POLI=
+CY));
++    feed(query, msg_policy_attrs(CMD_POLICY, cmd_attrs, SIZE(cmd_att=
+rs)));
++    feed(query, msg_policy_attrs(SUB_POLICY, sub_attrs, SIZE(sub_at=
+trs)));
++}
++
++/* the map tells us which policy validates the command we ask=
+ed about */
++static void
++test_reads_command_policy(void **state)
++{
++    s=
+truct ovpn_cap_query query =3D new_query();
++
++    feed(&query, msg_op_poli=
+cy(OVPN_CMD_PEER_NEW, CMD_POLICY));
++    const struct ovpn_cap_link *link =
+=3D ovpn_cap_find(&query, OVPN_CAP_CMD_MAP, OVPN_CMD_PEER_NEW);
++    assert=
+_non_null(link);
++    assert_int_equal(link->nested, CMD_POLICY);
++    free=
+(query=2Elinks);
++}
++
++/* and not about another one */
++static void
++test_i=
+gnores_other_command(void **state)
++{
++    struct ovpn_cap_query query =3D =
+new_query();
++
++    feed(&query, msg_op_policy(OVPN_CMD_PEER_DEL, CMD_POLIC=
+Y));
++    feed(&query, msg_policy_attr(CMD_POLICY, OVPN_A_PEER, NL_POLICY_T=
+YPE_ATTR_POLICY_IDX,
++                                 SUB_POLICY));
++    f=
+eed(&query, msg_policy_attr(SUB_POLICY, test_req=2Etarget_attr, NL_POLICY_T=
+YPE_ATTR_TYPE,
++                                 NL_ATTR_TYPE_U32));
++    a=
+ssert_int_equal(ovpn_cap_resolve(&query, &test_req), OVPN_CAP_UNSUPPORTED);=
+
++    free(query=2Elinks);
++}
++
++/* the nested attribute of that policy poi=
+nts at the sub-policy */
++static void
++test_follows_nested_attribute(void *=
+*state)
++{
++    struct ovpn_cap_query query =3D new_query();
++
++    feed(&q=
+uery, msg_op_policy(OVPN_CMD_PEER_NEW, CMD_POLICY));
++    feed(&query, msg_=
+policy_attr(CMD_POLICY, OVPN_A_PEER, NL_POLICY_TYPE_ATTR_POLICY_IDX,
++     =
+                            SUB_POLICY));
++    const struct ovpn_cap_link *=
+link =3D ovpn_cap_find(&query, CMD_POLICY, OVPN_A_PEER);
++    assert_non_nu=
+ll(link);
++    assert_int_equal(link->nested, SUB_POLICY);
++    free(query=
+=2Elinks);
++}
++
++/* an attribute id only means something inside its own pol=
+icy, so the same
++ * number elsewhere says nothing about our question: a co=
+mmand policy without
++ * the container is a no, whatever comes after it */
+=
++static void
++test_ignores_nested_attribute_elsewhere(void **state)
++{
++   =
+ struct ovpn_cap_query query =3D new_query();
++
++    feed(&query, msg_op_po=
+licy(OVPN_CMD_PEER_NEW, CMD_POLICY));
++    feed(&query, msg_policy_attr(CMD=
+_POLICY, OVPN_A_IFINDEX, NL_POLICY_TYPE_ATTR_TYPE,
++                       =
+          NL_ATTR_TYPE_U32));
++    feed(&query, msg_policy_attr(OTHER_POLIC=
+Y, OVPN_A_PEER, NL_POLICY_TYPE_ATTR_POLICY_IDX,
++                          =
+       SUB_POLICY));
++    feed(&query, msg_policy_attr(SUB_POLICY, test_req=
+=2Etarget_attr, NL_POLICY_TYPE_ATTR_TYPE,
++                                =
+ NL_ATTR_TYPE_U32));
++    assert_int_equal(ovpn_cap_resolve(&query, &test_r=
+eq), OVPN_CAP_UNSUPPORTED);
++    free(query=2Elinks);
++}
++
++/* the type of =
+the target attribute is read in the sub-policy */
++static void
++test_reads_=
+target_type(void **state)
++{
++    struct ovpn_cap_query query =3D new_query=
+();
++
++    feed_full_chain(&query);
++    const struct ovpn_cap_link *link =
+=3D ovpn_cap_find(&query, SUB_POLICY, test_req=2Etarget_attr);
++    assert_=
+non_null(link);
++    assert_int_equal(link->type, NL_ATTR_TYPE_U32);
++    f=
+ree(query=2Elinks);
++}
++
++/* and the same holds for the target attribute: a=
+ type read off some other
++ * policy is not an answer to what we asked */
++=
+static void
++test_ignores_target_attribute_elsewhere(void **state)
++{
++    =
+struct ovpn_cap_query query =3D new_query();
++
++    feed(&query, msg_op_pol=
+icy(OVPN_CMD_PEER_NEW, CMD_POLICY));
++    feed(&query, msg_policy_attr(CMD_=
+POLICY, OVPN_A_PEER, NL_POLICY_TYPE_ATTR_POLICY_IDX,
++                     =
+            SUB_POLICY));
++    feed(&query, msg_policy_attr(OTHER_POLICY, t=
+est_req=2Etarget_attr, NL_POLICY_TYPE_ATTR_TYPE,
++                         =
+        NL_ATTR_TYPE_U32));
++    assert_int_equal(ovpn_cap_resolve(&query, =
+&test_req), OVPN_CAP_UNSUPPORTED);
++    free(query=2Elinks);
++}
++
++/* the c=
+ommand's own policy does get read, so the target attribute has to be
++ * tu=
+rned away there too: the same id there is a different attribute */
++static =
+void
++test_ignores_target_attribute_in_command_policy(void **state)
++{
++   =
+ struct ovpn_cap_query query =3D new_query();
++
++    feed(&query, msg_op_po=
+licy(OVPN_CMD_PEER_NEW, CMD_POLICY));
++    feed(&query, msg_policy_attr(CMD=
+_POLICY, OVPN_A_PEER, NL_POLICY_TYPE_ATTR_POLICY_IDX,
++                    =
+             SUB_POLICY));
++    feed(&query, msg_policy_attr(CMD_POLICY, te=
+st_req=2Etarget_attr, NL_POLICY_TYPE_ATTR_TYPE,
++                          =
+       NL_ATTR_TYPE_U32));
++    assert_int_equal(ovpn_cap_resolve(&query, &=
+test_req), OVPN_CAP_UNSUPPORTED);
++    free(query=2Elinks);
++}
++
++/* the su=
+b-policy is read too, so the nested attribute has to be turned away
++ * the=
+re as well */
++static void
++test_ignores_nested_attribute_in_sub_policy(voi=
+d **state)
++{
++    struct ovpn_cap_query query =3D new_query();
++
++    feed=
+(&query, msg_op_policy(OVPN_CMD_PEER_NEW, CMD_POLICY));
++    feed(&query, m=
+sg_policy_attr(CMD_POLICY, OVPN_A_PEER, NL_POLICY_TYPE_ATTR_POLICY_IDX,
++  =
+                               SUB_POLICY));
++    feed(&query, msg_policy_a=
+ttr(SUB_POLICY, OVPN_A_PEER, NL_POLICY_TYPE_ATTR_POLICY_IDX,
++             =
+                    OTHER_POLICY));
++    feed(&query, msg_policy_attr(OTHER=
+_POLICY, test_req=2Etarget_attr, NL_POLICY_TYPE_ATTR_TYPE,
++               =
+                  NL_ATTR_TYPE_U32));
++    assert_int_equal(ovpn_cap_resolv=
+e(&query, &test_req), OVPN_CAP_UNSUPPORTED);
++    free(query=2Elinks);
++}
++=
+
++/* an attribute that is there but not as a nest has nothing to follow */
+=
++static void
++test_nested_attribute_without_policy_idx(void **state)
++{
++  =
+  struct ovpn_cap_query query =3D new_query();
++
++    feed(&query, msg_op_p=
+olicy(OVPN_CMD_PEER_NEW, CMD_POLICY));
++    feed(&query, msg_policy_attr(CM=
+D_POLICY, OVPN_A_PEER, NL_POLICY_TYPE_ATTR_TYPE,
++                         =
+        NL_ATTR_TYPE_U32));
++    feed(&query, msg_policy_attr(SUB_POLICY, t=
+est_req=2Etarget_attr, NL_POLICY_TYPE_ATTR_TYPE,
++                         =
+        NL_ATTR_TYPE_U32));
++    assert_int_equal(ovpn_cap_resolve(&query, =
+&test_req), OVPN_CAP_UNSUPPORTED);
++    free(query=2Elinks);
++}
++
++/* and o=
+ne that is a nest says nothing about the type we are after */
++static void
+=
++test_target_attribute_without_type(void **state)
++{
++    struct ovpn_cap_q=
+uery query =3D new_query();
++
++    feed(&query, msg_op_policy(OVPN_CMD_PEER=
+_NEW, CMD_POLICY));
++    feed(&query, msg_policy_attr(CMD_POLICY, OVPN_A_PE=
+ER, NL_POLICY_TYPE_ATTR_POLICY_IDX,
++                                 SUB_P=
+OLICY));
++    feed(&query, msg_policy_attr(SUB_POLICY, test_req=2Etarget_at=
+tr,
++                                 NL_POLICY_TYPE_ATTR_POLICY_IDX, OTHER=
+_POLICY));
++    assert_int_equal(ovpn_cap_resolve(&query, &test_req), OVPN_=
+CAP_UNSUPPORTED);
++    free(query=2Elinks);
++}
++
++/* a flat requirement nee=
+ds no hop: the command's policy is where to look */
++static void
++test_flat=
+_requirement_reads_command_policy(void **state)
++{
++    struct ovpn_cap_que=
+ry query =3D new_query();
++
++    feed(&query, msg_op_policy(OVPN_CMD_PEER_N=
+EW, CMD_POLICY));
++    feed(&query, msg_policy_attr(CMD_POLICY, flat_req=2E=
+target_attr, NL_POLICY_TYPE_ATTR_TYPE,
++                                 NL=
+_ATTR_TYPE_U32));
++    assert_int_equal(ovpn_cap_resolve(&query, &flat_req)=
+, OVPN_CAP_SUPPORTED);
++    free(query=2Elinks);
++}
++
++/* and an absent one=
+ is a plain no */
++static void
++test_flat_requirement_absent_is_unsupported=
+(void **state)
++{
++    struct ovpn_cap_query query =3D new_query();
++
++    =
+feed(&query, msg_op_policy(OVPN_CMD_PEER_NEW, CMD_POLICY));
++    feed(&quer=
+y, msg_policy_attr(OTHER_POLICY, flat_req=2Etarget_attr, NL_POLICY_TYPE_ATT=
+R_TYPE,
++                                 NL_ATTR_TYPE_U32));
++    assert_i=
+nt_equal(ovpn_cap_resolve(&query, &flat_req), OVPN_CAP_UNSUPPORTED);
++    f=
+ree(query=2Elinks);
++}
++
++/* a message we cannot parse stops the pass with =
+an error, rather than
++ * leaving a hole that would read as a no */
++static=
+ void
++test_malformed_message_stops(void **state)
++{
++    struct ovpn_cap_q=
+uery query =3D new_query();
++    struct nl_msg *msg =3D nlmsg_alloc();
++   =
+ struct nlattr *ops, *op;
++
++    assert_non_null(msg);
++    assert_non_null=
+(genlmsg_put(msg, NL_AUTO_PORT, NL_AUTO_SEQ, 0, 0, 0, CTRL_CMD_GETPOLICY, 0=
+));
++    ops =3D nla_nest_start(msg, CTRL_ATTR_OP_POLICY);
++    op =3D nla_=
+nest_start(msg, OVPN_CMD_PEER_NEW);
++    assert_int_equal(nla_put_u16(msg, =
+CTRL_ATTR_POLICY_DO, CMD_POLICY), 0);
++    nla_nest_end(msg, op);
++    nla_=
+nest_end(msg, ops);
++
++    assert_int_equal(ovpn_cap_query_cb(msg, &query),=
+ NL_STOP);
++    assert_true(query=2Eerr < 0);
++    assert_int_equal(query=
+=2En_links, 0);
++    nlmsg_free(msg);
++    free(query=2Elinks);
++}
++
++/* no=
+thing to read an answer out of is not the same as a "no" */
++static void
++t=
+est_resolve_without_command_policy(void **state)
++{
++    struct ovpn_cap_qu=
+ery query =3D new_query();
++
++    assert_int_equal(ovpn_cap_resolve(&query,=
+ &test_req), OVPN_CAP_UNKNOWN);
++}
++
++/* a kernel that does not nest the at=
+tribute simply never mentions it */
++static void
++test_resolve_nested_absen=
+t(void **state)
++{
++    struct ovpn_cap_query query =3D new_query();
++
++   =
+ feed(&query, msg_op_policy(OVPN_CMD_PEER_NEW, CMD_POLICY));
++    assert_in=
+t_equal(ovpn_cap_resolve(&query, &test_req), OVPN_CAP_UNSUPPORTED);
++    fr=
+ee(query=2Elinks);
++}
++
++/* the sub-policy is there but does not define the=
+ attribute: the ordinary no */
++static void
++test_resolve_target_absent(voi=
+d **state)
++{
++    struct ovpn_cap_query query =3D new_query();
++
++    feed=
+(&query, msg_op_policy(OVPN_CMD_PEER_NEW, CMD_POLICY));
++    feed(&query, m=
+sg_policy_attr(CMD_POLICY, OVPN_A_PEER, NL_POLICY_TYPE_ATTR_POLICY_IDX,
++  =
+                               SUB_POLICY));
++    assert_int_equal(ovpn_cap=
+_resolve(&query, &test_req), OVPN_CAP_UNSUPPORTED);
++    free(query=2Elinks=
+);
++}
++
++/* right name, wrong type: not the attribute we would be writing *=
+/
++static void
++test_resolve_wrong_type(void **state)
++{
++    struct ovpn_c=
+ap_query query =3D new_query();
++
++    feed(&query, msg_op_policy(OVPN_CMD_=
+PEER_NEW, CMD_POLICY));
++    feed(&query, msg_policy_attr(CMD_POLICY, OVPN_=
+A_PEER, NL_POLICY_TYPE_ATTR_POLICY_IDX,
++                                 S=
+UB_POLICY));
++    feed(&query, msg_policy_attr(SUB_POLICY, test_req=2Etarge=
+t_attr, NL_POLICY_TYPE_ATTR_TYPE,
++                                 NL_ATTR=
+_TYPE_U8));
++    assert_int_equal(ovpn_cap_resolve(&query, &test_req), OVPN=
+_CAP_UNSUPPORTED);
++    free(query=2Elinks);
++}
++
++/* and the whole chain, =
+from a dump to a yes */
++static void
++test_resolve_complete_chain(void **st=
+ate)
++{
++    struct ovpn_cap_query query =3D new_query();
++
++    feed_full_=
+chain(&query);
++    assert_int_equal(ovpn_cap_resolve(&query, &test_req), O=
+VPN_CAP_SUPPORTED);
++    free(query=2Elinks);
++}
++
++/* the kernel's order i=
+s not relied upon */
++static void
++test_resolve_any_order(void **state)
++{
+=
++    struct ovpn_cap_query query =3D new_query();
++
++    feed(&query, msg_p=
+olicy_attr(SUB_POLICY, test_req=2Etarget_attr, NL_POLICY_TYPE_ATTR_TYPE,
++ =
+                                NL_ATTR_TYPE_U32));
++    feed(&query, msg_p=
+olicy_attr(CMD_POLICY, OVPN_A_PEER, NL_POLICY_TYPE_ATTR_POLICY_IDX,
++      =
+                           SUB_POLICY));
++    feed(&query, msg_op_policy(OV=
+PN_CMD_PEER_NEW, CMD_POLICY));
++    assert_int_equal(ovpn_cap_resolve(&quer=
+y, &test_req), OVPN_CAP_SUPPORTED);
++    free(query=2Elinks);
++}
++
++/* a du=
+mp larger than the first allocation */
++static void
++test_resolve_large_dum=
+p(void **state)
++{
++    struct ovpn_cap_query query =3D new_query();
++
++   =
+ for (uint16_t attr_id =3D 1; attr_id <=3D 3 * OVPN_CAP_INITIAL_LINKS; attr=
+_id++)
++    {
++        feed(&query, msg_policy_attr(OTHER_POLICY, attr_id, =
+NL_POLICY_TYPE_ATTR_TYPE,
++                                     NL_ATTR_TYP=
+E_U32));
++    }
++    feed_full_chain(&query);
++    assert_true(query=2En_li=
+nks <=3D query=2Emax_links);
++    assert_int_equal(ovpn_cap_resolve(&query,=
+ &test_req), OVPN_CAP_SUPPORTED);
++    free(query=2Elinks);
++}
++
++int
++main=
+(void)
++{
++    const struct CMUnitTest tests[] =3D {
++        cmocka_unit_t=
+est(test_reads_command_policy),
++        cmocka_unit_test(test_ignores_othe=
+r_command),
++        cmocka_unit_test(test_follows_nested_attribute),
++    =
+    cmocka_unit_test(test_ignores_nested_attribute_elsewhere),
++        cmo=
+cka_unit_test(test_reads_target_type),
++        cmocka_unit_test(test_ignor=
+es_target_attribute_elsewhere),
++        cmocka_unit_test(test_ignores_targ=
+et_attribute_in_command_policy),
++        cmocka_unit_test(test_ignores_nes=
+ted_attribute_in_sub_policy),
++        cmocka_unit_test(test_nested_attribu=
+te_without_policy_idx),
++        cmocka_unit_test(test_target_attribute_wit=
+hout_type),
++        cmocka_unit_test(test_flat_requirement_reads_command_p=
+olicy),
++        cmocka_unit_test(test_flat_requirement_absent_is_unsupport=
+ed),
++        cmocka_unit_test(test_malformed_message_stops),
++        cmoc=
+ka_unit_test(test_resolve_without_command_policy),
++        cmocka_unit_tes=
+t(test_resolve_nested_absent),
++        cmocka_unit_test(test_resolve_targe=
+t_absent),
++        cmocka_unit_test(test_resolve_wrong_type),
++        cmo=
+cka_unit_test(test_resolve_complete_chain),
++        cmocka_unit_test(test_=
+resolve_any_order),
++        cmocka_unit_test(test_resolve_large_dump),
++  =
+  };
++
++    return cmocka_run_group_tests_name("dco", tests, NULL, NULL);
++=
+}
 
 -- 
-To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/19=
-83?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http=
-s://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1981?usp=
+=3Demail
+To unsubscribe, or for help writing mail filters, visit https://ge=
+rrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: newpat=
-chset
+Gerrit-MessageType: newpatchset
+=
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ic5c4=
-21ec2e9627340924a05509bb8aff0bbf17da
-Gerrit-Change-Number: 1983
-Gerrit-Patc=
-hSet: 4
+Gerrit-Change-Id: I0051effe7f=
+0636e30557d9ce92c50c458002f9e6
+Gerrit-Change-Number: 1981
+Gerrit-PatchSet: =
+4
 Gerrit-Owner: Gianmarco De Gregori <gianmarco@mandelbit=2Ecom>
-Gerr=
-it-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: Ralf Lici=
+Gerrit-Rev=
+iewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer: Ralf Lici=
  <ralf@mandelbit=2Ecom>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esou=
-rceforge=2Enet>
-Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>=
+Gerrit-CC: Antonio Quartulli <antonio@mandelbit=2Ec=
+om>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerr=
+it-Attention: Ralf Lici <ralf@mandelbit=2Ecom>
+Gerrit-Attention: Arne Schwa=
+be <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Attention: Gianmarco De Gregori <gia=
+nmarco@mandelbit=2Ecom>
 
-
---wQ9/+q8GQEo=
+--vTtp8ZEZ2ck=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Arne Schwabe=2E </p>
-<p>Gianmarco De Gregori <strong>=
-uploaded patch set #4</strong> to this change=2E</p><p><a href=3D"https://g=
-errit=2Eopenvpn=2Enet/c/openvpn/+/1983?usp=3Demail">View Change</a></p><pre=
- class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;">dco_linux: enable asymmetric peer IDs when supported<br><br>When =
-notifying ovpn about a new peer, also send the TX peer ID so the<br>module =
-can forward packets with the correct peer ID value=2E This<br>attribute is =
-optional: if tx_peer_id is missing, the module falls back<br>to the non-mul=
-tipeer configuration, where tx_peer_id equals rx_peer_id=2E<br><br>The attr=
-ibute is sent only to a kernel that knows it, since older ones<br>reject OV=
-PN_CMD_PEER_NEW with EINVAL on an attribute they cannot parse=2E<br>Define =
-the first DCO capability, DCO_CAP_ASYM_PEER_ID, as a row in the<br>requirem=
-ent table: the doit policy of OVPN_CMD_PEER_NEW must expose<br>OVPN_A_PEER_=
-TX_ID as a u32 inside OVPN_A_PEER=2E<br><br>The bit is then consumed=2E It =
-travels in tls_options, so a peer announces<br>its own ID only when it can =
-use asymmetric peer-ids, and a server<br>replies with its own only when the=
- client announced one and the local<br>kernel can do it too=2E A peer that =
-announces nothing leaves the other<br>side on symmetric peer-ids, so there =
-is nothing to exchange over the<br>wire=2E The local ID is generated under =
-the same bit, which also lifts the<br>blanket skip tls_multi_init_finalize(=
-) applied whenever DCO was enabled=2E<br><br>Change-Id: Ic5c421ec2e96273409=
-24a05509bb8aff0bbf17da<br>Signed-off-by: Ralf Lici &lt;ralf@mandelbit=2Ecom=
-&gt;<br>Signed-off-by: Gianmarco De Gregori &lt;gianmarco@mandelbit=2Ecom&g=
-t;<br>---<br>M src/openvpn/dco=2Ec<br>M src/openvpn/dco=2Eh<br>M src/openvp=
-n/dco_freebsd=2Ec<br>M src/openvpn/dco_internal=2Eh<br>M src/openvpn/dco_li=
-nux=2Ec<br>M src/openvpn/dco_win=2Ec<br>M src/openvpn/init=2Ec<br>M src/ope=
-nvpn/ovpn_dco_linux=2Eh<br>M src/openvpn/ssl=2Ec<br>M src/openvpn/ssl_commo=
-n=2Eh<br>M src/openvpn/ssl_ncp=2Ec<br>11 files changed, 130 insertions(+), =
-49 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mo=
-nospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=
-=2Enet:29418/openvpn refs/changes/83/1983/4</pre><pre style=3D"font-family:=
- monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvp=
-n/dco=2Ec b/src/openvpn/dco=2Ec</span><br><span>index 0d1ae67=2E=2E2bcdc78 =
-100644</span><br><span>--- a/src/openvpn/dco=2Ec</span><br><span>+++ b/src/=
-openvpn/dco=2Ec</span><br><span>@@ -62,8 +62,10 @@</span><br><span> </span>=
-<br><span> {</span><br><span>     bool epoch =3D ks-&gt;crypto_options=2Efl=
-ags &amp; CO_EPOCH_DATA_KEY_FORMAT;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    msg(D_DCO_DEBUG, &quot;%s: rx_peer_id=3D%d keyid=3D%d epo=
-ch=3D%d, currently %d keys installed&quot;,</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        __func__, multi-&gt;dco_rx_peer_id, ks-&gt;ke=
-y_id, epoch, multi-&gt;dco_keys_installed);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    msg(D_DCO_DEBUG,</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        &quot;%s: rx_peer_id=3D%d tx_peer_id=3D%u =
-keyid=3D%d epoch=3D%d, currently %d keys installed&quot;,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        __func__, multi-&gt;dco_rx_pe=
-er_id, multi-&gt;tx_peer_id, ks-&gt;key_id, epoch,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        multi-&gt;dco_keys_installed);</span=
-><br><span> </span><br><span>     /* Install a key in the PRIMARY slot only=
- when no other key exist=2E</span><br><span>      * From that moment on, an=
-y new key will be installed in the SECONDARY</span><br><span>@@ -515,9 +517=
-,11 @@</span><br><span> }</span><br><span> </span><br><span> bool</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-dco_check_pull_options(msglvl_t=
- msglevel, const struct options *o)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+dco_check_pull_options(msglvl_t msglevel, const struct tls_=
-multi *multi)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    if (!o-&gt;use_peer_id)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    /* asymmetric peer-ids are negotiated, not pushed, s=
-o options=2Euse_peer_id</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+     * is not yet in sync when this runs */</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    if (!multi-&gt;use_peer_id)</span><br><span=
->     {</span><br><span>         msg(msglevel, &quot;OPTIONS IMPORT: Server=
- did not request DATA_V2 packet &quot;</span><br><span>                    =
-   &quot;format required for data channel offload&quot;);</span><br><span>@=
-@ -549,8 +553,8 @@</span><br><span>         c-&gt;c2=2Etls_multi-&gt;dco_rx=
-_peer_id =3D -1;</span><br><span>     }</span><br><span> #endif</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    int ret =3D dco_new_peer(&amp=
-;c-&gt;c1=2Etuntap-&gt;dco, multi-&gt;rx_peer_id, sock-&gt;sd, NULL,</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-                           p=
-roto_is_dgram(sock-&gt;info=2Eproto) ? remoteaddr : NULL,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    int ret =3D dco_new_peer(&amp;c-&=
-gt;c1=2Etuntap-&gt;dco, multi-&gt;rx_peer_id, multi-&gt;tx_peer_id,</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+                           =
-sock-&gt;sd, NULL, proto_is_dgram(sock-&gt;info=2Eproto) ? remoteaddr : NUL=
-L,</span><br><span>                            NULL, NULL);</span><br><span=
->     if (ret &lt; 0)</span><br><span>     {</span><br><span>@@ -633,6 +637=
-,7 @@</span><br><span>     const struct context *c =3D &amp;mi-&gt;context;=
-</span><br><span> </span><br><span>     uint32_t rx_peer_id =3D c-&gt;c2=2E=
-tls_multi-&gt;rx_peer_id;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    uint32_t tx_peer_id =3D c-&gt;c2=2Etls_multi-&gt;tx_peer_id;</spa=
-n><br><span>     struct sockaddr *remoteaddr, *localaddr =3D NULL;</span><b=
-r><span>     struct sockaddr_storage local =3D { 0 };</span><br><span>     =
-const socket_descriptor_t sd =3D c-&gt;c2=2Elink_sockets[0]-&gt;sd;</span><=
-br><span>@@ -670,7 +675,7 @@</span><br><span>     }</span><br><span> </span=
-><br><span>     int ret =3D</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        dco_new_peer(&amp;c-&gt;c1=2Etuntap-&gt;dco, rx_peer_id, sd, =
-localaddr, remoteaddr, vpn_addr4, vpn_addr6);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        dco_new_peer(&amp;c-&gt;c1=2Etuntap-&gt;d=
-co, rx_peer_id, tx_peer_id, sd, localaddr, remoteaddr, vpn_addr4, vpn_addr6=
-);</span><br><span>     if (ret &lt; 0)</span><br><span>     {</span><br><s=
-pan>         return ret;</span><br><span>diff --git a/src/openvpn/dco=2Eh b=
-/src/openvpn/dco=2Eh</span><br><span>index bae239d=2E=2E3ddadad 100644</spa=
-n><br><span>--- a/src/openvpn/dco=2Eh</span><br><span>+++ b/src/openvpn/dco=
-=2Eh</span><br><span>@@ -46,6 +46,9 @@</span><br><span> #define DCO_IROUTE_=
-METRIC  100</span><br><span> #define DCO_DEFAULT_METRIC 200</span><br><span=
-> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/** Local DCO cap=
-ability bits, derived from kernel introspection */</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#define DCO_CAP_ASYM_PEER_ID (1u &lt;&lt; 0)=
- /**&lt; kernel supports OVPN_A_PEER_TX_ID */</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span> #if defined(ENABLE_DCO)</span><=
-br><span> </span><br><span> /**</span><br><span>@@ -95,10 +98,10 @@</span><=
-br><span>  * for the first conflicting option found and return false=2E</sp=
-an><br><span>  *</span><br><span>  * @param msglevel  the msg level to use =
-to print the warnings</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
- * @param o         the options struct that hold the options</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ * @param multi     the TLS state =
-holding the negotiated parameters</span><br><span>  * @return          true=
- if no conflict was detected, false otherwise</span><br><span>  */</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-bool dco_check_pull_options(ms=
-glvl_t msglevel, const struct options *o);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+bool dco_check_pull_options(msglvl_t msglevel, const=
- struct tls_multi *multi);</span><br><span> </span><br><span> /**</span><br=
-><span>  * Initialize the DCO context</span><br><span>@@ -265,6 +268,7 @@</=
-span><br><span>  *          of them and when it could not be asked</span><b=
-r><span>  */</span><br><span> unsigned int dco_probe_capabilities(void);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #els=
-e  /* if defined(ENABLE_DCO) */</span><br><span> </span><br><span> typedef =
-void *dco_context_t;</span><br><span>@@ -294,7 +298,7 @@</span><br><span> }=
-</span><br><span> </span><br><span> static inline bool</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-dco_check_pull_options(msglvl_t msglevel, =
-const struct options *o)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+dco_check_pull_options(msglvl_t msglevel, const struct tls_multi *mult=
-i)</span><br><span> {</span><br><span>     return false;</span><br><span> }=
-</span><br><span>@@ -405,5 +409,6 @@</span><br><span> {</span><br><span>   =
-  return 0;</span><br><span> }</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span> #endif /* defined(ENABLE_DCO) */</span><br><sp=
-an> #endif /* ifndef DCO_H */</span><br><span>diff --git a/src/openvpn/dco_=
-freebsd=2Ec b/src/openvpn/dco_freebsd=2Ec</span><br><span>index 8615cf0=2E=
-=2Ee914f4c 100644</span><br><span>--- a/src/openvpn/dco_freebsd=2Ec</span><=
-br><span>+++ b/src/openvpn/dco_freebsd=2Ec</span><br><span>@@ -133,9 +133,9=
- @@</span><br><span> }</span><br><span> </span><br><span> int</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-dco_new_peer(dco_context_t *dco, un=
-signed int rx_peer_id, int sd, struct sockaddr *localaddr,</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-             struct sockaddr *remotead=
-dr, const struct in_addr *vpn_ipv4,</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-             const struct in6_addr *vpn_ipv6)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+dco_new_peer(dco_context_t *dco, un=
-signed int rx_peer_id, unsigned int tx_peer_id, int sd,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+             struct sockaddr *localaddr=
-, struct sockaddr *remoteaddr,</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+             const struct in_addr *vpn_ipv4, const struct in6_ad=
-dr *vpn_ipv6)</span><br><span> {</span><br><span>     struct ifdrv drv;</sp=
-an><br><span>     nvlist_t *nvl, *local_nvl, *remote_nvl;</span><br><span>@=
-@ -143,7 +143,8 @@</span><br><span> </span><br><span>     nvl =3D nvlist_cr=
-eate(0);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    msg(D_DCO_DEBUG, &quot;%s: rx-peer-id %u, fd %d&quot;, __func__, r=
-x_peer_id, sd);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-msg(D_DCO_DEBUG, &quot;%s: rx-peer-id %u, tx-peer-id %u, fd %d&quot;,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        __func__, rx_peer=
-_id, tx_peer_id, sd);</span><br><span> </span><br><span>     if (localaddr)=
-</span><br><span>     {</span><br><span>diff --git a/src/openvpn/dco_intern=
-al=2Eh b/src/openvpn/dco_internal=2Eh</span><br><span>index a9203163=2E=2Eb=
-4821d3 100644</span><br><span>--- a/src/openvpn/dco_internal=2Eh</span><br>=
-<span>+++ b/src/openvpn/dco_internal=2Eh</span><br><span>@@ -59,8 +59,8 @@<=
-/span><br><span>  * They are implemented by dco_linux=2Ec</span><br><span> =
- */</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-int dco_new_peer(dco_context_t *dco, unsigned int rx_peer_id, socket_descri=
-ptor_t sd,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
-      struct sockaddr *localaddr, struct sockaddr *remoteaddr,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+int dco_new_peer(dco_context_t *=
-dco, unsigned int rx_peer_id, unsigned int tx_peer_id,</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                 socket_descriptor_t sd,=
- struct sockaddr *localaddr, struct sockaddr *remoteaddr,</span><br><span> =
-                 const struct in_addr *vpn_ipv4, const struct in6_addr *vpn=
-_ipv6);</span><br><span> </span><br><span> int dco_del_peer(dco_context_t *=
-dco, unsigned int rx_peer_id);</span><br><span>diff --git a/src/openvpn/dco=
-_linux=2Ec b/src/openvpn/dco_linux=2Ec</span><br><span>index 4830805=2E=2Eb=
-d10845 100644</span><br><span>--- a/src/openvpn/dco_linux=2Ec</span><br><sp=
-an>+++ b/src/openvpn/dco_linux=2Ec</span><br><span>@@ -104,7 +104,8 @@</spa=
-n><br><span> }</span><br><span> </span><br><span> /* What the local kernel =
-supports=2E It cannot change while we run, so the first</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">- * caller resolves it and the rest just r=
-ead it=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * call=
-er resolves it and the rest just read it=2E That caller is</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ * do_init_crypto_tls(), which runs =
-before any peer is added=2E */</span><br><span> static unsigned int dco_cap=
-s =3D 0;</span><br><span> static bool dco_caps_resolved =3D false;</span><b=
-r><span> </span><br><span>@@ -127,6 +128,10 @@</span><br><span>     int exp=
-ected_type;</span><br><span> };</span><br><span> </span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+static const struct ovpn_cap_req dco_capabili=
-ty_reqs[] =3D {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-{ DCO_CAP_ASYM_PEER_ID, OVPN_CMD_PEER_NEW, OVPN_A_PEER, OVPN_A_PEER_TX_ID, =
-NL_ATTR_TYPE_U32 },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>=
- /** the outcome of resolving one capability requirement */</span><br><span=
-> enum ovpn_cap_status</span><br><span> {</span><br><span>@@ -422,17 +427,4=
-5 @@</span><br><span>         return dco_caps;</span><br><span>     }</span=
-><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* no=
- capability is defined yet: resolve one whose answer we already know */</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    static const struct o=
-vpn_cap_req self_test =3D { 0, OVPN_CMD_PEER_NEW, OVPN_A_PEER,</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-                                  =
-                 OVPN_A_PEER_ID, NL_ATTR_TYPE_U32 };</span><br><span>     s=
-truct ovpn_cap_query query;</span><br><span>     CLEAR(query);</span><br><s=
-pan>     int err =3D ovpn_cap_ask(&amp;query);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    enum ovpn_cap_status status =3D err ? OVPN_CAP=
-_UNKNOWN : ovpn_cap_resolve(&amp;query, &amp;self_test);</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    free(query=2Elinks);</span><br><span=
-> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_DCO_DEBUG=
-, &quot;%s: policy introspection self-test: %s (status %d, err %d)&quot;, _=
-_func__,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        statu=
-s =3D=3D OVPN_CAP_SUPPORTED ? &quot;ok&quot; : &quot;unexpected&quot;, (int=
-)status, err);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    f=
-or (size_t i =3D 0; i &lt; SIZE(dco_capability_reqs); i++)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        const struct ovpn_cap_req *req =3D &amp;dc=
-o_capability_reqs[i];</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        switch (e=
-rr ? OVPN_CAP_UNKNOWN : ovpn_cap_resolve(&amp;query, req))</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            case OVPN_CAP_SUPPORTED:</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                dco_caps |=3D=
- req-&gt;cap;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-          break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            case OVPN_=
-CAP_UNSUPPORTED:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-             msg(D_DCO_DEBUG, &quot;%s: kernel does not support DCO capabil=
-ity 0x%x&quot;, __func__,</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                    req-&gt;cap);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+                break;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            case OVPN_CAP_UNKNOWN:</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+                /* no CTRL_CMD_GETPOLICY before 5=2E7, n=
-o command map before 5=2E10:</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                 * nothing to warn about */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                if (!err || err =3D=3D -N=
-LE_OPNOTSUPP)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-          {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-            msg(D_DCO_DEBUG,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                        &quot;%s: kernel has no netlink policy int=
-rospection, &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-                       &quot;assuming DCO capability 0x%x is unsupported&qu=
-ot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
-         __func__, req-&gt;cap);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+                    break;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+                }</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+                msg(M_WARN,</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+                    &quot;Note: cannot determine =
-DCO capability 0x%x from the kernel (%s), &quot;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+                    &quot;assuming it is unsup=
-ported&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-              req-&gt;cap, nl_geterror(err));</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+                break;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    free(query=
-=2Elinks);</span><br><span> </span><br><span>     dco_caps_resolved =3D tru=
-e;</span><br><span>     msg(D_DCO_DEBUG, &quot;%s: DCO local capabilities: =
-0x%x&quot;, __func__, dco_caps);</span><br><span>@@ -581,9 +614,9 @@</span>=
-<br><span> #endif</span><br><span> </span><br><span> int</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-dco_new_peer(dco_context_t *dco, unsigne=
-d int rx_peer_id, int sd, struct sockaddr *localaddr,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-             struct sockaddr *remoteaddr, c=
-onst struct in_addr *vpn_ipv4,</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-             const struct in6_addr *vpn_ipv6)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+dco_new_peer(dco_context_t *dco, unsigne=
-d int rx_peer_id, unsigned int tx_peer_id, int sd,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+             struct sockaddr *localaddr, str=
-uct sockaddr *remoteaddr,</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+             const struct in_addr *vpn_ipv4, const struct in6_addr *v=
-pn_ipv6)</span><br><span> {</span><br><span>     struct gc_arena gc =3D gc_=
-new();</span><br><span>     const char *remotestr =3D &quot;[undefined]&quo=
-t;;</span><br><span>@@ -591,7 +624,8 @@</span><br><span>     {</span><br><s=
-pan>         remotestr =3D print_sockaddr(remoteaddr, &amp;gc);</span><br><=
-span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_=
-DCO_DEBUG, &quot;%s: rx-peer-id %u, fd %d, remote addr: %s&quot;, __func__,=
- rx_peer_id, sd, remotestr);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    msg(D_DCO_DEBUG, &quot;%s: rx-peer-id %u, tx-peer-id %u, fd %d=
-, remote addr: %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        __func__, rx_peer_id, tx_peer_id, sd, remotestr);</span><br><s=
-pan> </span><br><span>     struct nl_msg *nl_msg =3D ovpn_dco_nlmsg_create(=
-dco, OVPN_CMD_PEER_NEW);</span><br><span>     if (!nl_msg)</span><br><span>=
-@@ -604,6 +638,13 @@</span><br><span>     int ret =3D -EMSGSIZE;</span><br>=
-<span> </span><br><span>     NLA_PUT_U32(nl_msg, OVPN_A_PEER_ID, rx_peer_id=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* old kernel=
-s reject the whole command if they see an attribute they do not</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+     * know=2E This is the same=
- answer the TLS layer used to decide whether to</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+     * negotiate an asymmetric ID, so the two c=
-annot disagree */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  if (dco_caps &amp; DCO_CAP_ASYM_PEER_ID)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        NLA_PUT_U32(nl_msg, OVPN_A_PEER_TX_ID, tx_peer_id);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span>    =
- NLA_PUT_U32(nl_msg, OVPN_A_PEER_SOCKET, sd);</span><br><span> </span><br><=
-span>     /* Set the remote endpoint if defined (for UDP) */</span><br><spa=
-n>@@ -783,12 +824,6 @@</span><br><span> {</span><br><span>     dco-&gt;ovpn=
-_dco_id =3D resolve_ovpn_netlink_id(M_FATAL);</span><br><span> </span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    /* nothing consumes the bitma=
-p yet; resolve it here to exercise the path */</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    if (check_debug_level(D_DCO_DEBUG))</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        dco_probe_capabilities();</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-</span><br><span>     dco-&gt;nl_sock =3D nl_socket_=
-alloc();</span><br><span> </span><br><span>     if (!dco-&gt;nl_sock)</span=
-><br><span>diff --git a/src/openvpn/dco_win=2Ec b/src/openvpn/dco_win=2Ec</=
-span><br><span>index 0ca803d=2E=2E061aace 100644</span><br><span>--- a/src/=
-openvpn/dco_win=2Ec</span><br><span>+++ b/src/openvpn/dco_win=2Ec</span><br=
-><span>@@ -411,11 +411,12 @@</span><br><span> }</span><br><span> </span><br=
-><span> int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_new_pe=
-er(dco_context_t *dco, unsigned int rx_peer_id, socket_descriptor_t sd,</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-             struct socka=
-ddr *localaddr, struct sockaddr *remoteaddr,</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+dco_new_peer(dco_context_t *dco, unsigned int rx_p=
-eer_id, unsigned int tx_peer_id,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+             socket_descriptor_t sd, struct sockaddr *localadd=
-r, struct sockaddr *remoteaddr,</span><br><span>              const struct =
-in_addr *vpn_ipv4, const struct in6_addr *vpn_ipv6)</span><br><span> {</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_DCO_DEBUG, &quot=
-;%s: rx-peer-id %u, fd &quot; SOCKET_PRINTF, __func__, rx_peer_id, sd);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_DCO_DEBUG, &q=
-uot;%s: rx-peer-id %u, tx-peer-id %u, fd &quot; SOCKET_PRINTF,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        __func__, rx_peer_id, tx=
-_peer_id, sd);</span><br><span> </span><br><span>     if (dco-&gt;ifmode =
-=3D=3D DCO_MODE_P2P)</span><br><span>     {</span><br><span>diff --git a/sr=
-c/openvpn/init=2Ec b/src/openvpn/init=2Ec</span><br><span>index 49fcaf6=2E=
-=2Ef5a9c82 100644</span><br><span>--- a/src/openvpn/init=2Ec</span><br><spa=
-n>+++ b/src/openvpn/init=2Ec</span><br><span>@@ -2662,7 +2662,7 @@</span><b=
-r><span>         }</span><br><span> </span><br><span>         /* Check if p=
-ushed options are compatible with DCO, if enabled */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        if (dco_enabled(&amp;c-&gt;options)=
- &amp;&amp; !dco_check_pull_options(D_PUSH_ERRORS, &amp;c-&gt;options))</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (dco_enabled=
-(&amp;c-&gt;options) &amp;&amp; !dco_check_pull_options(D_PUSH_ERRORS, c-&g=
-t;c2=2Etls_multi))</span><br><span>         {</span><br><span>             =
-msg(D_PUSH_ERRORS, &quot;OPTIONS ERROR: pushed options are incompatible &qu=
-ot;</span><br><span>                                &quot;with data channel=
- offload=2E Use --disable-dco to connect to &quot;</span><br><span>@@ -3397=
-,6 +3397,10 @@</span><br><span> </span><br><span>     /* let the TLS engine=
- know if keys have to be installed in DCO or not */</span><br><span>     to=
-=2Edco_enabled =3D dco_enabled(options);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    if (to=2Edco_enabled)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        to=2Edco_capabilities =3D dco_probe_capabilities();</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span>=
- </span><br><span>     /*</span><br><span>      * Initialize OpenVPN&#39;s =
-master TLS-mode object=2E</span><br><span>diff --git a/src/openvpn/ovpn_dco=
-_linux=2Eh b/src/openvpn/ovpn_dco_linux=2Eh</span><br><span>index b3c9ff0=
-=2E=2E28cf97a 100644</span><br><span>--- a/src/openvpn/ovpn_dco_linux=2Eh</=
-span><br><span>+++ b/src/openvpn/ovpn_dco_linux=2Eh</span><br><span>@@ -54,=
-6 +54,7 @@</span><br><span> 	OVPN_A_PEER_LINK_TX_BYTES,</span><br><span> 	O=
-VPN_A_PEER_LINK_RX_PACKETS,</span><br><span> 	OVPN_A_PEER_LINK_TX_PACKETS,<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+	OVPN_A_PEER_TX_ID,<=
-/span><br><span> </span><br><span> 	__OVPN_A_PEER_MAX,</span><br><span> 	OV=
-PN_A_PEER_MAX =3D (__OVPN_A_PEER_MAX - 1)</span><br><span>diff --git a/src/=
-openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec</span><br><span>index 2e058fc=2E=2E12=
-e1374 100644</span><br><span>--- a/src/openvpn/ssl=2Ec</span><br><span>+++ =
-b/src/openvpn/ssl=2Ec</span><br><span>@@ -1216,9 +1216,10 @@</span><br><spa=
-n>     tls_session_init(multi, &amp;multi-&gt;session[TM_ACTIVE]);</span><b=
-r><span>     tls_session_init(multi, &amp;multi-&gt;session[TM_INITIAL]);</=
-span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    i=
-f (!multi-&gt;opt=2Edco_enabled)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    /* Calculate the asymmetric peer-id=2E Leaving it unset is=
- what keeps us from</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-     * announcing one to the peer, so DCO needs the kernel to support it */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (dco_can_asy=
-m_peer_id(&amp;multi-&gt;opt))</span><br><span>     {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        /* Calculate the asymmetric peer-id=
- */</span><br><span>         if (multi-&gt;rx_peer_id =3D=3D MAX_PEER_ID &a=
-mp;&amp; multi-&gt;session[TM_INITIAL]=2Eopt-&gt;mode !=3D MODE_SERVER)</sp=
-an><br><span>         {</span><br><span>             multi-&gt;rx_peer_id =
-=3D (uint32_t)(get_random() % (MAX_PEER_ID - 1));</span><br><span>@@ -1949,=
-9 +1950,16 @@</span><br><span> push_peer_info_peerid(struct buffer *out, co=
-nst struct tls_multi *multi,</span><br><span>                       const s=
-truct tls_session *session)</span><br><span> {</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    if (multi-&gt;rx_peer_id =3D=3D MAX_PEER_ID ||=
- session-&gt;opt-&gt;dco_enabled)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    if (multi-&gt;rx_peer_id =3D=3D MAX_PEER_ID)</span><br><s=
-pan>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* =
-No valid peer id or DCO is enabled=2E Cannot use this feature */</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        /* No valid peer id */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return true=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    if (!dco_can_asym_peer_id(session-&gt;opt))</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        /* DCO is in use but the loca=
-l kernel cannot do asymmetric peer-ids:</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+         * do not announce our ID so that the peer fall=
-s back as well */</span><br><span>         return true;</span><br><span>   =
-  }</span><br><span> </span><br><span>@@ -2393,16 +2401,18 @@</span><br><sp=
-an>     {</span><br><span>         output_peer_info_env(session-&gt;opt-&gt=
-;es, multi-&gt;peer_info);</span><br><span>         uint32_t peer_id =3D ex=
-tract_asymmetric_peer_id(multi-&gt;peer_info);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        if (peer_id !=3D MAX_PEER_ID &amp;&amp; !s=
-ession-&gt;opt-&gt;dco_enabled)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        if (peer_id !=3D MAX_PEER_ID &amp;&amp; dco_can_asym_pe=
-er_id(session-&gt;opt))</span><br><span>         {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+            /* set before key_method_2_write=
-() runs, so that a server knows</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+             * whether to announce its own ID back */</span><br=
-><span>             multi-&gt;tx_peer_id =3D peer_id;</span><br><span>     =
-        multi-&gt;use_asymmetric_peer_id =3D true;</span><br><span>        =
-     multi-&gt;use_peer_id =3D true;</span><br><span>         }</span><br><=
-span>         else</span><br><span>         {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            /* Peer has no support for asymmetric p=
-eer-id, and DCO currently</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-             * can only handle symmetric peer IDs */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            /* the peer announced noth=
-ing, or we cannot use asymmetric peer-ids</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+             * locally: stay symmetric */</span><br><=
-span>             multi-&gt;tx_peer_id =3D multi-&gt;rx_peer_id;</span><br>=
-<span>         }</span><br><span>     }</span><br><span>diff --git a/src/op=
-envpn/ssl_common=2Eh b/src/openvpn/ssl_common=2Eh</span><br><span>index 7fd=
-a552=2E=2E4a09cb9 100644</span><br><span>--- a/src/openvpn/ssl_common=2Eh</=
-span><br><span>+++ b/src/openvpn/ssl_common=2Eh</span><br><span>@@ -455,12 =
-+455,24 @@</span><br><span>     size_t ekm_label_size;</span><br><span>    =
- size_t ekm_size;</span><br><span> </span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    bool dco_enabled; /**&lt; Whether keys have to be install=
-ed in DCO or not */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    bool dco_enabled;              /**&lt; Whether keys have to be installe=
-d in DCO or not */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   unsigned int dco_capabilities; /**&lt; local kernel DCO capability bitma=
-p (DCO_CAP_*) */</span><br><span> </span><br><span>     /** The app custom =
-control protocols we should announce as supported */</span><br><span>     c=
-onst char *acc_protocols;</span><br><span> };</span><br><span> </span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ * Whether asymmetric peer-ids can be used: eit=
-her DCO is not in the way, or the</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ * local kernel supports them=2E When false we neither genera=
-te nor announce an</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-* ID, so the remote peer falls back as well=2E</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+static inline bool</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+dco_can_asym_peer_id(const struct tls_options *o)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    return !o-&gt;dco_enabled || (o-&gt;dco_capabilit=
-ies &amp; DCO_CAP_ASYM_PEER_ID);</span><br><span style=3D"color: hsl(120, 1=
+rently required from: Arne Schwabe, Gianmarco De Gregori, Ralf Lici=2E </p>=
+
+<p>Gianmarco De Gregori <strong>uploaded patch set #4</strong> to this cha=
+nge=2E</p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1981?usp=
+=3Demail">View Change</a></p><pre class=3D"blocks" style=3D"font-family: mo=
+nospace,monospace; white-space: pre-wrap;">dco: detect local kernel capabil=
+ities through netlink policies<br><br>The ovpn module lives in the kernel, =
+so the attributes it accepts may<br>differ from what we were built against=
+=2E CTRL_CMD_GETPOLICY dumps the<br>validation policy of a family: which at=
+tributes each command takes, of<br>what type, and for a nested one the sub-=
+policy that validates it=2E<br><br>Add a helper to query it, wrapped in dco=
+_probe_capabilities() so the<br>rest of the tree never talks to netlink its=
+elf=2E Answering a requirement<br>means following a chain - which policy va=
+lidates the command, where its<br>nested attribute points if it has one, wh=
+at type the target attribute<br>has there=2E One dump of the whole family a=
+nswers every requirement: it is<br>recorded as it arrives and the chains ar=
+e followed once it is complete=2E<br><br>The answer has three values rather=
+ than two: without &quot;could not ask&quot;, a<br>netlink error would look=
+ the same as a kernel without the feature=2E<br><br>The query needs uapi he=
+aders from 5=2E10 or later=2E Built against older<br>ones, it is left out a=
+nd dco_probe_capabilities() reports no capability=2E<br><br>No capability i=
+s defined yet, so the bitmap comes back empty; the rows<br>that fill it arr=
+ive with the features that need them=2E The unit test<br>feeds hand-built d=
+umps to the pass and checks what each requirement<br>resolves to=2E<br><br>=
+Change-Id: I0051effe7f0636e30557d9ce92c50c458002f9e6<br>Signed-off-by: Gian=
+marco De Gregori &lt;gianmarco@mandelbit=2Ecom&gt;<br>---<br>M CMakeLists=
+=2Etxt<br>M config=2Eh=2Ecmake=2Ein<br>M configure=2Eac<br>M src/openvpn/dc=
+o=2Eh<br>M src/openvpn/dco_freebsd=2Ec<br>M src/openvpn/dco_linux=2Ec<br>M =
+src/openvpn/dco_win=2Ec<br>M tests/unit_tests/openvpn/Makefile=2Eam<br>A te=
+sts/unit_tests/openvpn/mock_dco_dependencies=2Ec<br>A tests/unit_tests/open=
+vpn/test_dco=2Ec<br>10 files changed, 1,006 insertions(+), 0 deletions(-)<b=
+r><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace=
+; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openv=
+pn refs/changes/81/1981/4</pre><pre style=3D"font-family: monospace,monospa=
+ce; white-space: pre-wrap;"><span>diff --git a/CMakeLists=2Etxt b/CMakeList=
+s=2Etxt</span><br><span>index 50b2d68=2E=2Ebb2ea0c 100644</span><br><span>-=
+-- a/CMakeLists=2Etxt</span><br><span>+++ b/CMakeLists=2Etxt</span><br><spa=
+n>@@ -19,6 +19,7 @@</span><br><span> include(CheckLinkerFlag OPTIONAL)</spa=
+n><br><span> include(CheckTypeSize)</span><br><span> include(CheckStructHas=
+Member)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+include(Chec=
+kCSourceCompiles)</span><br><span> include(CTest)</span><br><span> </span><=
+br><span> option(UNSUPPORTED_BUILDS &quot;Allow unsupported builds&quot; OF=
+F)</span><br><span>@@ -205,6 +206,11 @@</span><br><span>     check_symbol_e=
+xists(getpeereid &quot;unistd=2Eh;sys/socket=2Eh&quot; HAVE_GETPEEREID)</sp=
+an><br><span> endif()</span><br><span> </span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+if (ENABLE_LINUXDCO)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    check_c_source_compiles(&quot;#include &lt;linux/g=
+enetlink=2Eh&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int=
+ main(void) { return CTRL_ATTR_OP_POLICY; }&quot; HAVE_DECL_CTRL_ATTR_OP_PO=
+LICY)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+endif ()</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> check_i=
+nclude_files(grp=2Eh HAVE_GRP_H)</span><br><span> if (HAVE_GRP_H)</span><br=
+><span>     check_symbol_exists(getgrnam grp=2Eh HAVE_GETGRNAM)</span><br><=
+span>@@ -728,6 +734,12 @@</span><br><span>             )</span><br><span>  =
+   endif ()</span><br><span> </span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    if (ENABLE_LINUXDCO AND HAVE_DECL_CTRL_ATTR_OP_POLICY)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        list(APPEND unit_t=
+ests</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &qu=
+ot;test_dco&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    endi=
+f ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n>     if (NOT WIN32 AND ${ENABLE_PKCS11})</span><br><span>         set(_HA=
+VE_SOFTHSM2 YES)</span><br><span>         find_program(P11TOOL p11tool)</sp=
+an><br><span>@@ -969,6 +981,14 @@</span><br><span>             )</span><br>=
+<span>     endif ()</span><br><span> </span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    if (TARGET test_dco)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        target_sources(test_dco PRIVATE</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            tests/unit_tests/ope=
+nvpn/mock_dco_dependencies=2Ec</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            tests/unit_tests/openvpn/mock_get_random=2Ec</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/fdm=
+isc=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    endif ()</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     tar=
+get_compile_definitions(test_dhcp PRIVATE DHCP_UNIT_TEST)</span><br><span> =
+    target_sources(test_dhcp PRIVATE</span><br><span>         tests/unit_te=
+sts/openvpn/mock_get_random=2Ec</span><br><span>diff --git a/config=2Eh=2Ec=
+make=2Ein b/config=2Eh=2Ecmake=2Ein</span><br><span>index f7818cf=2E=2Eaa21=
+532 100644</span><br><span>--- a/config=2Eh=2Ecmake=2Ein</span><br><span>++=
++ b/config=2Eh=2Ecmake=2Ein</span><br><span>@@ -87,6 +87,9 @@</span><br><sp=
+an> /* Define to 1 if you have the `daemon&#39; function=2E */</span><br><s=
+pan> #cmakedefine HAVE_DAEMON</span><br><span> </span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+/* Define to 1 if linux/genetlink=2Eh has netli=
+nk policy introspection (5=2E10) */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#cmakedefine01 HAVE_DECL_CTRL_ATTR_OP_POLICY</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /* Define to 1 i=
+f you have the &lt;direct=2Eh&gt; header file=2E */</span><br><span> #cmake=
+define HAVE_DIRECT_H</span><br><span> </span><br><span>diff --git a/configu=
+re=2Eac b/configure=2Eac</span><br><span>index 05fa964=2E=2Eef05253 100644<=
+/span><br><span>--- a/configure=2Eac</span><br><span>+++ b/configure=2Eac</=
+span><br><span>@@ -664,6 +664,7 @@</span><br><span> 		;;</span><br><span> e=
+sac</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+dco_unit_tests=3D&quot;no&quot;</span><br><span> if test &quot;$enable_dc=
+o&quot; !=3D &quot;no&quot;; then</span><br><span> 	enable_dco_arg=3D&quot;=
+$enable_dco&quot;</span><br><span> 	if test &quot;${enable_iproute2}&quot; =
+=3D &quot;yes&quot;; then</span><br><span>@@ -692,6 +693,12 @@</span><br><s=
+pan> 				OPTIONAL_LIBNL_GENL_CFLAGS=3D&quot;${LIBNL_GENL_CFLAGS}&quot;</spa=
+n><br><span> 				OPTIONAL_LIBNL_GENL_LIBS=3D&quot;${LIBNL_GENL_LIBS}&quot;<=
+/span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+		=
+		dnl</span><br><span style=3D"color: hsl(120, 100%, 40%);">+				dnl Netlin=
+k policy introspection needs uapi headers from 5=2E10</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+				dnl</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+				AC_CHECK_DECLS([CTRL_ATTR_OP_POLICY], , , [[#incl=
+ude &lt;linux/genetlink=2Eh&gt;]])</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+				dco_unit_tests=3D&quot;${ac_cv_have_decl_CTRL_ATTR_OP_PO=
+LICY}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span> 				AC_DEFINE(ENABLE_DCO, 1, [Enable shared data channel offload]=
+)</span><br><span> 				AC_MSG_NOTICE([Enabled ovpn-dco (via ovpn kernel mod=
+ule) support for Linux])</span><br><span> 			fi</span><br><span>@@ -1340,6 =
++1347,7 @@</span><br><span> AC_SUBST([PLUGIN_AUTH_PAM_LIBS])</span><br><spa=
+n> </span><br><span> AM_CONDITIONAL([WIN32], [test &quot;${WIN32}&quot; =3D=
+ &quot;yes&quot;])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+A=
+M_CONDITIONAL([DCO_UNIT_TESTS], [test &quot;${dco_unit_tests}&quot; =3D &qu=
+ot;yes&quot;])</span><br><span> AM_CONDITIONAL([GIT_CHECKOUT], [test &quot;=
+${GIT_CHECKOUT}&quot; =3D &quot;yes&quot;])</span><br><span> AM_CONDITIONAL=
+([ENABLE_PLUGIN_AUTH_PAM], [test &quot;${enable_plugin_auth_pam}&quot; =3D =
+&quot;yes&quot;])</span><br><span> AM_CONDITIONAL([ENABLE_PLUGIN_DOWN_ROOT]=
+, [test &quot;${enable_plugin_down_root}&quot; =3D &quot;yes&quot;])</span>=
+<br><span>diff --git a/src/openvpn/dco=2Eh b/src/openvpn/dco=2Eh</span><br>=
+<span>index c435f8c=2E=2Eb0a8621 100644</span><br><span>--- a/src/openvpn/d=
+co=2Eh</span><br><span>+++ b/src/openvpn/dco=2Eh</span><br><span>@@ -254,6 =
++254,17 @@</span><br><span>  */</span><br><span> bool</span><br><span> dco_=
+supports_epoch_data(const struct context *c);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Return=
+ a bitmap of DCO_CAP_* bits describing the negotiable features the</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ * local kernel supports=2E =
+Everything DCO does without negotiating is available</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * regardless=2E Resolved once and reused=
+; platforms without capability probing</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ * return 0=2E</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+@return  bitmask of DCO_CAP_* flags; 0 both when the kernel supports none</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *          of them a=
+nd when it could not be asked</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+unsign=
+ed int dco_probe_capabilities(void);</span><br><span> #else  /* if defined(=
+ENABLE_DCO) */</span><br><span> </span><br><span> typedef void *dco_context=
+_t;</span><br><span>@@ -388,5 +399,11 @@</span><br><span> {</span><br><span=
+>     return false;</span><br><span> }</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+static inline unsigned int</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+dco_probe_capabilities(void)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span>=
+<br><span> #endif /* defined(ENABLE_DCO) */</span><br><span> #endif /* ifnd=
+ef DCO_H */</span><br><span>diff --git a/src/openvpn/dco_freebsd=2Ec b/src/=
+openvpn/dco_freebsd=2Ec</span><br><span>index 11b8dff=2E=2E9613c63 100644</=
+span><br><span>--- a/src/openvpn/dco_freebsd=2Ec</span><br><span>+++ b/src/=
+openvpn/dco_freebsd=2Ec</span><br><span>@@ -707,6 +707,12 @@</span><br><spa=
+n>     return 0;</span><br><span> }</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+dco_probe_capabilities(void)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    return 0;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span> bool</span><br><span> dco_available(msglvl_t msglevel)</span><b=
+r><span> {</span><br><span>diff --git a/src/openvpn/dco_linux=2Ec b/src/ope=
+nvpn/dco_linux=2Ec</span><br><span>index 3a55b6e=2E=2Efefc517 100644</span>=
+<br><span>--- a/src/openvpn/dco_linux=2Ec</span><br><span>+++ b/src/openvpn=
+/dco_linux=2Ec</span><br><span>@@ -103,6 +103,361 @@</span><br><span>     r=
+eturn ret;</span><br><span> }</span><br><span> </span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+/* What the local kernel supports=2E It cannot =
+change while we run, so the first</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ * caller resolves it and the rest just read it=2E */</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+static unsigned int dco_cap=
+s =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static bool=
+ dco_caps_resolved =3D false;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if HAVE_=
+DECL_CTRL_ATTR_OP_POLICY</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Netlink p=
+olicy introspection: the ovpn module lives in the kernel, so the</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * attributes it accepts may d=
+iffer from what we were built against=2E</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * CTRL_CMD_GETPOLICY says which attributes each comma=
+nd takes and of what type=2E</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+/* One row per capability,=
+ all resolved from the same dump=2E A row can</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ * only ask for an attribute the dump reports: UN=
+SPEC and REJECT ones never</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ * appear, and before Linux 7=2E4 neither do BE16/BE32 ones (b785f5c=
+56fb3)=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+struct =
+ovpn_cap_req</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned int cap;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint16_t cmd;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint16_t nested_attr;=
+ /* 0 if target_attr is not nested */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    uint16_t target_attr;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    int expected_type;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/** the o=
+utcome of resolving one capability requirement */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+enum ovpn_cap_status</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    OVPN_CAP_UNKNOWN,     /**&lt; the question could not be as=
+ked */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OVPN_CAP_=
+SUPPORTED,   /**&lt; the kernel accepts the attribute */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    OVPN_CAP_UNSUPPORTED, /**&lt; the =
+kernel answered, and does not accept it */</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* The comman=
+d map is kept with the policies under this index: there `id` is a</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ * command and `nested` the p=
+olicy of its doit=2E -1 means &quot;not reported&quot;=2E */</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#define OVPN_CAP_CMD_MAP (-2)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+/* ovpn on Linux 7=2E3 reports 77 links *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OVPN_CAP_I=
+NITIAL_LINKS 128</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+/* inside `policy`, at=
+tribute `id` has type `type` and, if nested, is</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ * validated by policy `nested` */</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+struct ovpn_cap_link</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    int policy;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    uint16_t id;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    int type;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    int nested;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+struct ovpn_cap_query</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct ovpn_cap_link *links;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    size_t n_links;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    size_t max_links;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    bool cmd_map; /* the dump carried a comma=
+nd map */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int er=
+r;      /* a message we could not parse, or no memory to record it */</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+static struct nla_policy ovpn_cap_ctrl_policy[CTRL_ATTR_MAX =
++ 1] =3D {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    [CTRL=
+_ATTR_POLICY] =3D { =2Etype =3D NLA_NESTED },</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    [CTRL_ATTR_OP_POLICY] =3D { =2Etype =3D NLA_N=
+ESTED },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+static struct nla_policy ovpn_cap_op_policy[CTR=
+L_ATTR_POLICY_DUMP_MAX + 1] =3D {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    [CTRL_ATTR_POLICY_DO] =3D { =2Etype =3D NLA_U32 },</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+static struct nla_policy ovpn_cap_attr_policy[NL_POLICY_TYPE=
+_ATTR_MAX + 1] =3D {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    [NL_POLICY_TYPE_ATTR_TYPE] =3D { =2Etype =3D NLA_U32 },</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    [NL_POLICY_TYPE_ATTR_POLICY_ID=
+X] =3D { =2Etype =3D NLA_U32 },</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+static int</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ovpn_cap_add_link(struct ovpn_cap=
+_query *query, int policy, uint16_t id, int type, int nested)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    if (query-&gt;n_links =3D=3D query-&gt;max_link=
+s)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        size_t max_links =3D qu=
+ery-&gt;max_links ? 2 * query-&gt;max_links : OVPN_CAP_INITIAL_LINKS;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct ovpn_cap_l=
+ink *links =3D realloc(query-&gt;links, max_links * sizeof(*links));</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!links)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            return -NLE_NOMEM;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        query-&gt;links =3D links;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        query-&gt;max_links =3D max_lin=
+ks;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    query-&gt;links[query-&gt;n_links++] =3D (str=
+uct ovpn_cap_link){ policy, id, type, nested };</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+static const struct ovpn_cap_link =
+*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_cap_find(cons=
+t struct ovpn_cap_query *query, int policy, uint16_t id)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    for (size_t i =3D 0; i &lt; query-&gt;n_links; i++)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        if (query-&gt;links[i]=2Ep=
+olicy =3D=3D policy &amp;&amp; query-&gt;links[i]=2Eid =3D=3D id)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+            return &amp;query-&gt;links=
+[i];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    return NULL;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ * One message of the dump carries eithe=
+r the command map or a slice of one</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ * policy=2E Everything is recorded and the chain is follow=
+ed only once the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+dump is complete, so the order of the messages does not matter=2E</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+static int</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ovpn_cap_query_cb(struct nl_msg *msg, void *arg)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct ovpn_cap_query *query =3D arg;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct nlattr *=
+tb[CTRL_ATTR_MAX + 1];</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    const struct genlmsghdr *ghdr =3D nlmsg_data(nlmsg_hdr(msg));</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    query-&gt;err =3D nla_parse(tb, CTRL_ATTR=
+_MAX, genlmsg_attrdata(ghdr, 0),</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                           genlmsg_attrlen(ghdr, 0), ovpn_cap_=
+ctrl_policy);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if=
+ (query-&gt;err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return NL=
+_STOP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    /* CTRL_ATTR_OP_POLICY: which policy valid=
+ates the doit of each command */</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    if (tb[CTRL_ATTR_OP_POLICY])</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        const struct nlattr *nla_cmd;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        int rem_cmd;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        query-&gt;cmd_map =3D true;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        nla_for_each_nested(nla_cmd, tb[CTRL_ATTR_OP_POLICY], rem_=
+cmd)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            struct nlattr=
+ *tb_cmd[CTRL_ATTR_POLICY_DUMP_MAX + 1];</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            query-&gt;err =3D nla_parse(tb_cmd, CTRL_ATTR_POLICY_DUMP_MAX=
+, nla_data(nla_cmd),</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++                                   nla_len(nla_cmd), ovpn_cap_op_policy);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (quer=
+y-&gt;err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+ return NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            if (tb_cmd[CTRL_=
+ATTR_POLICY_DO])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+       query-&gt;err =3D ovpn_cap_add_link(query, OVPN_CAP_CMD_MAP, (uint16=
+_t)nla_type(nla_cmd),</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                                               -1, (int)nla_get_u32(tb_cm=
+d[CTRL_ATTR_POLICY_DO]));</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                if (query-&gt;err)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                {</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                    return NL_STOP;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+                }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* CTRL_ATT=
+R_POLICY: which attributes each policy accepts */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    if (!tb[CTRL_ATTR_POLICY])</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        return NL_OK;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+const struct nlattr *nla_policy;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    int rem_policy;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    nl=
+a_for_each_nested(nla_policy, tb[CTRL_ATTR_POLICY], rem_policy)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        struct nlattr *nla_attr;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        int rem_attr;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        int policy_id =3D nla_=
+type(nla_policy);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        nla_for_each_=
+nested(nla_attr, nla_policy, rem_attr)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            struct nlattr *tb_attr[NL_POLICY_TYPE_ATTR_MAX + 1];</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            int attr_=
+id =3D nla_type(nla_attr);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+            int type =3D -1;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            int nested =3D -1;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            query-&gt;err =3D nla_parse_nested(tb_attr, NL_POLICY_T=
+YPE_ATTR_MAX, nla_attr,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                                          ovpn_cap_attr_policy);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            if (query-&gt;=
+err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                retur=
+n NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            if (tb_attr[NL_POLICY_=
+TYPE_ATTR_TYPE])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+       type =3D (int)nla_get_u32(tb_attr[NL_POLICY_TYPE_ATTR_TYPE]);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            if (tb_attr[NL_POLIC=
+Y_TYPE_ATTR_POLICY_IDX])</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+               nested =3D (int)nla_get_u32(tb_attr[NL_POLICY_TYPE_ATTR_POLI=
+CY_IDX]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            query-&gt;err =3D ovpn_=
+cap_add_link(query, policy_id, (uint16_t)attr_id, type, nested);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            if (query-&gt;err)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                return NL=
+_STOP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    return NL_OK;</span><br><span style=3D"color: hsl(120, 1=
 00%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span> /** @addtogroup control_processor</span><br><span>  *  @{ */</=
-span><br><span> /** @name Index of key_state objects within a tls_session s=
-tructure</span><br><span>diff --git a/src/openvpn/ssl_ncp=2Ec b/src/openvpn=
-/ssl_ncp=2Ec</span><br><span>index 7b15f5f=2E=2Efdec002 100644</span><br><s=
-pan>--- a/src/openvpn/ssl_ncp=2Ec</span><br><span>+++ b/src/openvpn/ssl_ncp=
-=2Ec</span><br><span>@@ -403,7 +403,7 @@</span><br><span> {</span><br><span=
->     /* will return 0 if peer_info is null */</span><br><span>     const u=
-nsigned int iv_proto_peer =3D extract_iv_proto(multi-&gt;peer_info);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    const unsigned int tx_pe=
-er_id =3D extract_asymmetric_peer_id(multi-&gt;peer_info);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    uint32_t tx_peer_id =3D extract_=
-asymmetric_peer_id(multi-&gt;peer_info);</span><br><span> </span><br><span>=
-     /* The other peer does not support P2P NCP */</span><br><span>     if =
-(!(iv_proto_peer &amp; IV_PROTO_NCP_P2P))</span><br><span>@@ -411,6 +411,14=
- @@</span><br><span>         return;</span><br><span>     }</span><br><span=
-> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!dco_can_=
-asym_peer_id(session-&gt;opt))</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     /* We cannot use asymmetric peer-ids locally: ignore the announced</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+         * ID and use t=
-he legacy shared peer-id selection below */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        tx_peer_id =3D MAX_PEER_ID;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        multi-&gt;use_asymmetric_pe=
-er_id =3D false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>=
-     if (iv_proto_peer &amp; IV_PROTO_DATA_V2)</span><br><span>     {</span=
-><br><span>         multi-&gt;use_peer_id =3D true;</span><br><span>@@ -441=
-,8 +449,7 @@</span><br><span>     if (multi-&gt;use_peer_id)</span><br><spa=
-n>     {</span><br><span>         /* The asymmetric peer-id trumps on the E=
-KM generated ones */</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       if ((iv_proto_peer &amp; IV_PROTO_TLS_KEY_EXPORT)</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-            &amp;&amp; (tx_peer_id !=3D =
-MAX_PEER_ID) &amp;&amp; !multi-&gt;opt=2Edco_enabled)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        if ((iv_proto_peer &amp; IV_PROTO=
-_TLS_KEY_EXPORT) &amp;&amp; (tx_peer_id !=3D MAX_PEER_ID))</span><br><span>=
-         {</span><br><span>             multi-&gt;tx_peer_id =3D tx_peer_id=
-;</span><br><span>             multi-&gt;use_asymmetric_peer_id =3D true;</=
-span><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/=
-c/openvpn/+/1983?usp=3Demail">change 1983</a>=2E To unsubscribe, or for hel=
-p writing mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/set=
-tings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://sch=
-ema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
-://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1983?usp=3Demail"/><meta itemprop=3D"name" con=
-tent=3D"View Change"/></div></div>
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Dump the policies of =
+the family into query-&gt;links=2E Returns 0, or the</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * netlink error that kept us from readin=
+g it all=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+stati=
+c int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_cap_ask(s=
+truct ovpn_cap_query *query)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struc=
+t nl_msg *nl_msg =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    int ret =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct nl=
+_sock *nl_sock =3D nl_socket_alloc();</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    if (!nl_sock)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        return -NLE_NOMEM;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret =3D genl_connect=
+(nl_sock);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (r=
+et &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto out;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    set_cloexec(nl_socket_get_fd(nl_soc=
+k));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    nl_msg =3D nlmsg_alloc();</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!nl_msg)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        ret =3D -NLE_NOMEM;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        goto out;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    /* nlctrl has a fixed family id, so there is nothing to resolve =
+first=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * Unli=
+ke CTRL_CMD_GETFAMILY, CTRL_CMD_GETPOLICY does not load the module:</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+     * this relies on dco_a=
+vailable() having resolved the family already=2E */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!genlmsg_put(nl_msg, NL_AUTO_PORT=
+, NL_AUTO_SEQ, GENL_ID_CTRL, 0, NLM_F_DUMP,</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+                     CTRL_CMD_GETPOLICY, 0))</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        ret =3D -NLE_MSGSIZE;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        goto out;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    ret =3D nla_put_string(nl_msg, CTRL_ATTR_FAMILY_NAME, OVPN_FA=
+MILY_NAME);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
+ret &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto out;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    ret =3D nl_socket_modify_cb(nl_sock, NL_CB_VALID, NL_=
+CB_CUSTOM, ovpn_cap_query_cb, query);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    if (ret &lt; 0)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    ret =3D nl_send_auto(nl_soc=
+k, nl_msg);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
+ret &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto out;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    ret =3D nl_recvmsgs_default(nl_sock);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    if (ret &gt;=3D 0)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        ret =3D query-&gt;err;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+out:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    nlms=
+g_free(nl_msg);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+nl_socket_free(nl_sock);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return ret=
+ &lt; 0 ? ret : 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ * Decide whether the kernel supports the requirement, =
+from the links the pass</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ * collected=2E A link the kernel never mentioned is a no=2E A dump wit=
+hout a</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * command ma=
+p is not an answer either way, and is reported as such, but the</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ * capability stays off just th=
+e same=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+static enum ovpn_cap_statu=
+s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_cap_resolve(c=
+onst struct ovpn_cap_query *query, const struct ovpn_cap_req *req)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    /* no command map: the dump cannot say whi=
+ch policy validates the command */</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    if (!query-&gt;cmd_map)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        return OVPN_CAP_UNKNOWN;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* a li=
+nk is missing: the command, the container or the target is not there */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct ovpn_c=
+ap_link *link =3D ovpn_cap_find(query, OVPN_CAP_CMD_MAP, req-&gt;cmd);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (link &amp;&amp; =
+req-&gt;nested_attr)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        link =
+=3D ovpn_cap_find(query, link-&gt;nested, req-&gt;nested_attr);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    if (link)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        link =3D ovpn_cap_find(query, link-&gt;nested, req-&gt;ta=
+rget_attr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!link)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        return OVPN_CAP_UNSUPPORTED;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    /* the whole chain is there: a yes only if the attrib=
+ute has the type we</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+     * would be writing into it */</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    return (link-&gt;type =3D=3D req-&gt;expected_type) ? OV=
+PN_CAP_SUPPORTED : OVPN_CAP_UNSUPPORTED;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+unsigned int</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_probe_capabilities(=
+void)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    if (dco_caps_resolved)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        return dco_caps;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    /* no capability is defined yet: resolve one whose answer we al=
+ready know */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    st=
+atic const struct ovpn_cap_req self_test =3D { 0, OVPN_CMD_PEER_NEW, OVPN_A=
+_PEER,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
+                                      OVPN_A_PEER_ID, NL_ATTR_TYPE_U32 };</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct ovpn_cap_q=
+uery query;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEA=
+R(query);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int er=
+r =3D ovpn_cap_ask(&amp;query);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    enum ovpn_cap_status status =3D err ? OVPN_CAP_UNKNOWN : ov=
+pn_cap_resolve(&amp;query, &amp;self_test);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    free(query=2Elinks);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    msg(D_DCO_DEBUG, &quot;%s: policy introspection self-test: %s=
+ (status %d, err %d)&quot;, __func__,</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        status =3D=3D OVPN_CAP_SUPPORTED ? &quot;ok&quot;=
+ : &quot;unexpected&quot;, (int)status, err);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    dco_caps_resolved =3D true;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    msg(D_DCO_DEBUG, &quot;%s: DCO local capabilities: 0=
+x%x&quot;, __func__, dco_caps);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret=
+urn dco_caps;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#else  /* if HAVE_DECL_CTRL_ATTR_OP_POLIC=
+Y */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+dco_probe_capabilities(void)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    if (!dco_caps_resolved)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        msg(D_DCO_DEBUG,</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            &quot;%s: built without netlink policy=
+ introspection, no DCO capability can be detected&quot;,</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            __func__);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        dco_caps_resolved =3D true;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    return dco_caps;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* if =
+HAVE_DECL_CTRL_ATTR_OP_POLICY */</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span> static struct nl_msg *</span><br><span> ovpn=
+_dco_nlmsg_create(const dco_context_t *dco, uint8_t cmd)</span><br><span> {=
+</span><br><span>@@ -428,6 +783,12 @@</span><br><span> {</span><br><span>  =
+   dco-&gt;ovpn_dco_id =3D resolve_ovpn_netlink_id(M_FATAL);</span><br><spa=
+n> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* nothing c=
+onsumes the bitmap yet; resolve it here to exercise the path */</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    if (check_debug_level(D_DCO=
+_DEBUG))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        dco_probe_capabil=
+ities();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     dco=
+-&gt;nl_sock =3D nl_socket_alloc();</span><br><span> </span><br><span>     =
+if (!dco-&gt;nl_sock)</span><br><span>diff --git a/src/openvpn/dco_win=2Ec =
+b/src/openvpn/dco_win=2Ec</span><br><span>index 6074552=2E=2E0f2b9eb 100644=
+</span><br><span>--- a/src/openvpn/dco_win=2Ec</span><br><span>+++ b/src/op=
+envpn/dco_win=2Ec</span><br><span>@@ -612,6 +612,12 @@</span><br><span>    =
+ return 0;</span><br><span> }</span><br><span> </span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+unsigned int</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+dco_probe_capabilities(void)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span> bool</span><br><span> dco_available(msglvl_t msglevel)</span><br><spa=
+n> {</span><br><span>diff --git a/tests/unit_tests/openvpn/Makefile=2Eam b/=
+tests/unit_tests/openvpn/Makefile=2Eam</span><br><span>index e3404754=2E=2E=
+d1dfac9 100644</span><br><span>--- a/tests/unit_tests/openvpn/Makefile=2Eam=
+</span><br><span>+++ b/tests/unit_tests/openvpn/Makefile=2Eam</span><br><sp=
+an>@@ -40,6 +40,12 @@</span><br><span> endif</span><br><span> endif</span><=
+br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+if HAVE_S=
+ITNL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+if DCO_UNIT_TES=
+TS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_binaries +=
+=3D dco_testdriver</span><br><span style=3D"color: hsl(120, 100%, 40%);">+e=
+ndif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+endif</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> if !CROSS_C=
+OMPILING</span><br><span> TESTS =3D $(test_binaries)</span><br><span> endif=
+</span><br><span>@@ -452,4 +458,16 @@</span><br><span> 	$(top_srcdir)/src/o=
+penvpn/run_command=2Ec \</span><br><span> 	$(top_srcdir)/src/openvpn/socket=
+_util=2Ec</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+dco_testdriver_CFLAGS  =3D \</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(to=
+p_srcdir)/src/openvpn \</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+	@TEST_CFLAGS@ $(OPTIONAL_CRYPTO_CFLAGS)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+dco_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ $(OPTION=
+AL_CRYPTO_LIBS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_=
+testdriver_SOURCES =3D test_dco=2Ec \</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+	mock_msg=2Ec mock_msg=2Eh mock_dco_dependencies=2Ec mock=
+_get_random=2Ec test_common=2Eh \</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+	$(top_srcdir)/src/compat/compat-strlcpy=2Ec \</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/buffer=
+=2Ec \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir=
+)/src/openvpn/fdmisc=2Ec \</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+	$(top_srcdir)/src/openvpn/platform=2Ec \</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/win32-util=2Ec</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> build-=
+tests-local: $(check_PROGRAMS)</span><br><span>diff --git a/tests/unit_test=
+s/openvpn/mock_dco_dependencies=2Ec b/tests/unit_tests/openvpn/mock_dco_dep=
+endencies=2Ec</span><br><span>new file mode 100644</span><br><span>index 00=
+00000=2E=2Ee7f20f5</span><br><span>--- /dev/null</span><br><span>+++ b/test=
+s/unit_tests/openvpn/mock_dco_dependencies=2Ec</span><br><span>@@ -0,0 +1,8=
+0 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An application to=
+ securely tunnel IP networks</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ *             over a single UDP port, with support for SSL/TLS-ba=
+sed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             s=
+ession authentication and key exchange,</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ *             packet encryption, packet authentication=
+, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *            =
+ packet compression=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright =
+(C) 2002-2026 OpenVPN Inc &lt;sales@openvpn=2Enet&gt;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2026 Gianmarco De Grego=
+ri &lt;gianmarco@mandelbit=2Ecom&gt;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ *  This program is free software; you can redistribute it and/or modify</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  it under the terms=
+ of the GNU General Public License version 2</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *  as published by the Free Software Foundation=
+=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ *  This program is distributed i=
+n the hope that it will be useful,</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without even the implied warra=
+nty of</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTA=
+BILITY or FITNESS FOR A PARTICULAR PURPOSE=2E  See the</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Public License for more =
+details=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You should have receiv=
+ed a copy of the GNU General Public License along</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ *  with this program; if not, see &lt;https:=
+//www=2Egnu=2Eorg/licenses/&gt;=2E</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ *  Stubs for what dco_linux=2Ec drag=
+s in but capability probing never reaches:</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ *  the data path, the event loop and the signal mac=
+hinery=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#include &quot;config=2Eh&quot;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#include &quot;syshead=2Eh&quot;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#include &quot;dco=2Eh&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#include &quot;crypto_backend=2Eh&quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;forwar=
+d=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include=
+ &quot;multi=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#include &quot;networking=2Eh&quot;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#include &quot;socket_util=2Eh&quot;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+multi_process_incoming_dco(dco_context_t *dco)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+process_incoming_dco(dco_context_t *dco)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+register_signal=
+(struct signal_info *si, int signum, const char *signal_text)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+net_iface_new(const openvpn_n=
+et_ctx_t *ctx, const openvpn_net_iface_t *iface, const char *type,</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+              const void *ar=
+g)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    return 0;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+net_iface_del(const=
+ openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    return 0;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+cipher_kt_key_size(const char=
+ *ciphername)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 0;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+const char *</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++print_sockaddr_ex(const struct sockaddr *addr, const char *separator, cons=
+t unsigned int flags,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                  struct gc_arena *gc)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    return &quot;[mock]&quot;;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+}</span><br><span>diff --git a/tests/unit_tests/openvpn/test_=
+dco=2Ec b/tests/unit_tests/openvpn/test_dco=2Ec</span><br><span>new file mo=
+de 100644</span><br><span>index 0000000=2E=2Ebd874bf</span><br><span>--- /d=
+ev/null</span><br><span>+++ b/tests/unit_tests/openvpn/test_dco=2Ec</span><=
+br><span>@@ -0,0 +1,487 @@</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVP=
+N -- An application to securely tunnel IP networks</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ *             over a single UDP port, with =
+support for SSL/TLS-based</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ *             session authentication and key exchange,</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ *             packet encryption,=
+ packet authentication, and</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ *             packet compression=2E</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ *  Copyright (C) 2002-2026 OpenVPN Inc &lt;sales@openvpn=2Enet&gt;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2=
+026 Gianmarco De Gregori &lt;gianmarco@mandelbit=2Ecom&gt;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ *  This program is free software; you can redistribu=
+te it and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ *  it under the terms of the GNU General Public License version 2</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ *  as published by the Free=
+ Software Foundation=2E</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This prog=
+ram is distributed in the hope that it will be useful,</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without ev=
+en the implied warranty of</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=2E  See the<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Publ=
+ic License for more details=2E</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Yo=
+u should have received a copy of the GNU General Public License along</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if=
+ not, see &lt;https://www=2Egnu=2Eorg/licenses/&gt;=2E</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Unit tests fo=
+r the DCO capability queries=2E</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  R=
+esolving a requirement is a pass over a policy dump that records what it</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  reports, followed =
+by a walk along what the pass recorded=2E The pass is fed</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ *  dumps built by hand, which cover =
+what would otherwise need a particular</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ *  kernel=2E</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;config=
+=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#include &quot;syshead=2Eh&quot;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#include &lt;stdarg=2Eh&gt;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#include &lt;setjmp=2Eh&gt;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;cmocka=2Eh&gt;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#include &quot;dco_linux=2Ec&quot;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+#define CMD_POLICY   4</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#define SUB_POLICY   9</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#define OTHER_POLICY 7</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+/* the bit is never read here, only the chain that wou=
+ld set it */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static =
+const struct ovpn_cap_req test_req =3D { =2Ecap =3D 1u,</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                                       =
+       =2Ecmd =3D OVPN_CMD_PEER_NEW,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                                              =2Enested_at=
+tr =3D OVPN_A_PEER,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                                              =2Etarget_attr =3D OVPN_A_PEE=
+R_KEEPALIVE_INTERVAL,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                                              =2Eexpected_type =3D NL_ATT=
+R_TYPE_U32 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+/* the same requirement w=
+ithout a container: the target sits in the command&#39;s</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ * own policy */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+static const struct ovpn_cap_req flat_req=
+ =3D { =2Ecap =3D 1u,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                                              =2Ecmd =3D OVPN_CMD_PEER_NE=
+W,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
+                             =2Enested_attr =3D 0,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                                            =
+  =2Etarget_attr =3D OVPN_A_IFINDEX,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                                              =2Eexpected_=
+type =3D NL_ATTR_TYPE_U32 };</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static str=
+uct ovpn_cap_query</span><br><span style=3D"color: hsl(120, 100%, 40%);">+n=
+ew_query(void)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct ovpn_cap_que=
+ry query;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(query);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    return query;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+/* a CTRL_ATTR_OP_POLICY message saying which policy validates `cmd` *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static struct nl_m=
+sg *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+msg_op_policy(u=
+int16_t cmd, uint32_t do_policy)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
+truct nl_msg *msg =3D nlmsg_alloc();</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    struct nlattr *ops, *op;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    assert_non_null(msg);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    assert_non_null(genlmsg_put(msg, NL_AUTO_PORT, NL_AUTO_SEQ=
+, 0, 0, 0, CTRL_CMD_GETPOLICY, 0));</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ ops =3D nla_nest_start(msg, CTRL_ATTR_OP_POLICY);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    op =3D nla_nest_start(msg, cmd);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(nla_pu=
+t_u32(msg, CTRL_ATTR_POLICY_DO, do_policy), 0);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    nla_nest_end(msg, op);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    nla_nest_end(msg, ops);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    return msg;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* one attribute =
+of a policy: its id, which field of its descriptor to set,</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ * and the value to put there */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+struct attr_desc</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    uint16_t attr_id;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    int field;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    uint32_t value;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* a CT=
+RL_ATTR_POLICY message describing `n` attributes of one policy */</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+static struct nl_msg *</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+msg_policy_attrs(uint16_t =
+policy_id, const struct attr_desc *descs, size_t n)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    struct nl_msg *msg =3D nlmsg_alloc();</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    struct nlattr *policies, *policy,=
+ *attr;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    assert_non_null(msg);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_non_null(genlm=
+sg_put(msg, NL_AUTO_PORT, NL_AUTO_SEQ, 0, 0, 0, CTRL_CMD_GETPOLICY, 0));</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    policies =3D nla_nest_start(msg, CTRL=
+_ATTR_POLICY);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    p=
+olicy =3D nla_nest_start(msg, policy_id);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    for (size_t i =3D 0; i &lt; n; i++)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        attr =3D nla_nest_start(msg, descs[i]=
+=2Eattr_id);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ assert_int_equal(nla_put_u32(msg, descs[i]=2Efield, descs[i]=2Evalue), 0);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        nla_nest_en=
+d(msg, attr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    nla_nest_end(msg=
+, policy);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    nla_n=
+est_end(msg, policies);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return msg;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+/* the shape the kernel actually sends: one attribute pe=
+r message */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static =
+struct nl_msg *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+msg_=
+policy_attr(uint16_t policy_id, uint16_t attr_id, int field, uint32_t value=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    const struct attr_desc one =3D {=
+ attr_id, field, value };</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return ms=
+g_policy_attrs(policy_id, &amp;one, 1);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+feed(struct ovpn_cap_quer=
+y *query, struct nl_msg *msg)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asse=
+rt_int_equal(ovpn_cap_query_cb(msg, query), NL_OK);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    nlmsg_free(msg);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*=
+ Walk the whole chain, with both policies carrying attributes we are not</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * after and the ones =
+we are neither first nor last, so that the pass has to</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ * skip past them rather than stop at th=
+e first mismatch=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+feed_=
+full_chain(struct ovpn_cap_query *query)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    const struct attr_desc cmd_attrs[] =3D {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        { OVPN_A_IFINDEX, NL_POLICY_TYPE_ATTR_T=
+YPE, NL_ATTR_TYPE_U32 },</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        { OVPN_A_PEER, NL_POLICY_TYPE_ATTR_POLICY_IDX, SUB_POLICY },</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        { OVPN_A_KEYC=
+ONF, NL_POLICY_TYPE_ATTR_TYPE, NL_ATTR_TYPE_NESTED },</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    };</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    const struct attr_desc sub_attrs[] =3D {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        { OVPN_A_PEER_ID, NL_=
+POLICY_TYPE_ATTR_TYPE, NL_ATTR_TYPE_U32 },</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        { OVPN_A_PEER_REMOTE_PORT, NL_POLICY_TYPE_AT=
+TR_TYPE, NL_ATTR_TYPE_U16 },</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        { test_req=2Etarget_attr, NL_POLICY_TYPE_ATTR_TYPE, NL_ATT=
+R_TYPE_U32 },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  { OVPN_A_PEER_LOCAL_PORT, NL_POLICY_TYPE_ATTR_TYPE, NL_ATTR_TYPE_U16 },</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    };</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    feed(query, msg_op_policy(OVPN_CMD_PEER_NEW, CMD_=
+POLICY));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    feed(q=
+uery, msg_policy_attrs(CMD_POLICY, cmd_attrs, SIZE(cmd_attrs)));</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    feed(query, msg_policy_att=
+rs(SUB_POLICY, sub_attrs, SIZE(sub_attrs)));</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* the map t=
+ells us which policy validates the command we asked about */</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+test_reads_command_policy(void **state)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    struct ovpn_cap_query query =3D new=
+_query();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_op_p=
+olicy(OVPN_CMD_PEER_NEW, CMD_POLICY));</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    const struct ovpn_cap_link *link =3D ovpn_cap_find(&=
+amp;query, OVPN_CAP_CMD_MAP, OVPN_CMD_PEER_NEW);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    assert_non_null(link);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(link-&gt;nested, C=
+MD_POLICY);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    free=
+(query=2Elinks);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+/* and not about another one */</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+test_ignores_other_command(void **st=
+ate)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    struct ovpn_cap_query query =
+=3D new_query();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    feed(&amp;query, m=
+sg_op_policy(OVPN_CMD_PEER_DEL, CMD_POLICY));</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_policy_attr(CMD_POLICY, =
+OVPN_A_PEER, NL_POLICY_TYPE_ATTR_POLICY_IDX,</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                                 SUB_POLICY));</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    feed(&amp;query, ms=
+g_policy_attr(SUB_POLICY, test_req=2Etarget_attr, NL_POLICY_TYPE_ATTR_TYPE,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+              NL_ATTR_TYPE_U32));</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    assert_int_equal(ovpn_cap_resolve(&amp;query, &amp;test_r=
+eq), OVPN_CAP_UNSUPPORTED);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    free(query=2Elinks);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+/* the nested attribute =
+of that policy points at the sub-policy */</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+test_follows_nested_attribute(void **state)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    struct ovpn_cap_query query =3D new_query();</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_op_policy(OVPN_CMD_=
+PEER_NEW, CMD_POLICY));</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    feed(&amp;query, msg_policy_attr(CMD_POLICY, OVPN_A_PEER, NL_POLICY=
+_TYPE_ATTR_POLICY_IDX,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                                 SUB_POLICY));</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    const struct ovpn_cap_link *link =3D ovpn=
+_cap_find(&amp;query, CMD_POLICY, OVPN_A_PEER);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    assert_non_null(link);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(link-&gt;nested, SU=
+B_POLICY);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    free(=
+query=2Elinks);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+/* an attribute id only means something i=
+nside its own policy, so the same</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ * number elsewhere says nothing about our question: a comman=
+d policy without</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+the container is a no, whatever comes after it */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+test_ignores_nested_attribute_elsewhere(void **state)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    struct ovpn_cap_query query =3D n=
+ew_query();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_op=
+_policy(OVPN_CMD_PEER_NEW, CMD_POLICY));</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    feed(&amp;query, msg_policy_attr(CMD_POLICY, OVPN_=
+A_IFINDEX, NL_POLICY_TYPE_ATTR_TYPE,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                                 NL_ATTR_TYPE_U32));</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_=
+policy_attr(OTHER_POLICY, OVPN_A_PEER, NL_POLICY_TYPE_ATTR_POLICY_IDX,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                        =
+         SUB_POLICY));</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    feed(&amp;query, msg_policy_attr(SUB_POLICY, test_req=2Etarget_attr,=
+ NL_POLICY_TYPE_ATTR_TYPE,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                                 NL_ATTR_TYPE_U32));</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(ovpn_cap_resol=
+ve(&amp;query, &amp;test_req), OVPN_CAP_UNSUPPORTED);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    free(query=2Elinks);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+/* the type of the target attribute is read in the sub-policy */</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+test_reads_target_type(void **state)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    struct ovpn_cap_query query =3D n=
+ew_query();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    feed_full_chain(&amp;qu=
+ery);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const stru=
+ct ovpn_cap_link *link =3D ovpn_cap_find(&amp;query, SUB_POLICY, test_req=
+=2Etarget_attr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ assert_non_null(link);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    assert_int_equal(link-&gt;type, NL_ATTR_TYPE_U32);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    free(query=2Elinks);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+/* and the same holds for the target attribute: a type read off some=
+ other</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * policy is =
+not an answer to what we asked */</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+test_ignores_target_attribute_elsewhere(void **state)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    struct ovpn_cap_query query =3D new_query();</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_op_policy(OVPN_C=
+MD_PEER_NEW, CMD_POLICY));</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    feed(&amp;query, msg_policy_attr(CMD_POLICY, OVPN_A_PEER, NL_POL=
+ICY_TYPE_ATTR_POLICY_IDX,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                                 SUB_POLICY));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_policy_attr(OTHE=
+R_POLICY, test_req=2Etarget_attr, NL_POLICY_TYPE_ATTR_TYPE,</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                                 NL=
+_ATTR_TYPE_U32));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  assert_int_equal(ovpn_cap_resolve(&amp;query, &amp;test_req), OVPN_CAP_UN=
+SUPPORTED);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    free=
+(query=2Elinks);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+/* the command&#39;s own policy does get=
+ read, so the target attribute has to be</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * turned away there too: the same id there is a diffe=
+rent attribute */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+st=
+atic void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_ignor=
+es_target_attribute_in_command_policy(void **state)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    struct ovpn_cap_query query =3D new_query();</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_op_policy(OVPN_CMD_PEER_=
+NEW, CMD_POLICY));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   feed(&amp;query, msg_policy_attr(CMD_POLICY, OVPN_A_PEER, NL_POLICY_TYPE=
+_ATTR_POLICY_IDX,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+                               SUB_POLICY));</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_policy_attr(CMD_POLICY, t=
+est_req=2Etarget_attr, NL_POLICY_TYPE_ATTR_TYPE,</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                                 NL_ATTR_TYPE_=
+U32));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_in=
+t_equal(ovpn_cap_resolve(&amp;query, &amp;test_req), OVPN_CAP_UNSUPPORTED);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    free(query=2Eli=
+nks);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+/* the sub-policy is read too, so the nested attrib=
+ute has to be turned away</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ * there as well */</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+te=
+st_ignores_nested_attribute_in_sub_policy(void **state)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    struct ovpn_cap_query query =3D new_query();</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_op_policy(OVPN_CMD_PEE=
+R_NEW, CMD_POLICY));</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    feed(&amp;query, msg_policy_attr(CMD_POLICY, OVPN_A_PEER, NL_POLICY_TY=
+PE_ATTR_POLICY_IDX,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                                 SUB_POLICY));</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_policy_attr(SUB_POLICY,=
+ OVPN_A_PEER, NL_POLICY_TYPE_ATTR_POLICY_IDX,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                                 OTHER_POLICY));<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    feed(&amp;query,=
+ msg_policy_attr(OTHER_POLICY, test_req=2Etarget_attr, NL_POLICY_TYPE_ATTR_=
+TYPE,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+                   NL_ATTR_TYPE_U32));</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    assert_int_equal(ovpn_cap_resolve(&amp;query, &amp;t=
+est_req), OVPN_CAP_UNSUPPORTED);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    free(query=2Elinks);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* an attribute tha=
+t is there but not as a nest has nothing to follow */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+test_nested_attribute_without_policy_idx(void **s=
+tate)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    struct ovpn_cap_query query =
+=3D new_query();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    feed(&amp;query, m=
+sg_op_policy(OVPN_CMD_PEER_NEW, CMD_POLICY));</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_policy_attr(CMD_POLICY, =
+OVPN_A_PEER, NL_POLICY_TYPE_ATTR_TYPE,</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                                 NL_ATTR_TYPE_U32));</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    feed(&amp;query, ms=
+g_policy_attr(SUB_POLICY, test_req=2Etarget_attr, NL_POLICY_TYPE_ATTR_TYPE,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+              NL_ATTR_TYPE_U32));</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    assert_int_equal(ovpn_cap_resolve(&amp;query, &amp;test_r=
+eq), OVPN_CAP_UNSUPPORTED);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    free(query=2Elinks);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+/* and one that is a nes=
+t says nothing about the type we are after */</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+test_target_attribute_without_type(void **state)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    struct ovpn_cap_query query =3D new_query(=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_op_policy(O=
+VPN_CMD_PEER_NEW, CMD_POLICY));</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    feed(&amp;query, msg_policy_attr(CMD_POLICY, OVPN_A_PEER, N=
+L_POLICY_TYPE_ATTR_POLICY_IDX,</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                                 SUB_POLICY));</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_policy_attr(=
+SUB_POLICY, test_req=2Etarget_attr,</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                                 NL_POLICY_TYPE_ATTR_POLICY=
+_IDX, OTHER_POLICY));</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    assert_int_equal(ovpn_cap_resolve(&amp;query, &amp;test_req), OVPN_CA=
+P_UNSUPPORTED);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+free(query=2Elinks);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+/* a flat requirement needs no hop: =
+the command&#39;s policy is where to look */</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+test_flat_requirement_reads_command_policy(void **state)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    struct ovpn_cap_query query =3D new=
+_query();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_op_p=
+olicy(OVPN_CMD_PEER_NEW, CMD_POLICY));</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    feed(&amp;query, msg_policy_attr(CMD_POLICY, flat_re=
+q=2Etarget_attr, NL_POLICY_TYPE_ATTR_TYPE,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                                 NL_ATTR_TYPE_U32));=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equa=
+l(ovpn_cap_resolve(&amp;query, &amp;flat_req), OVPN_CAP_SUPPORTED);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    free(query=2Elinks);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+/* and an absent one is a plain no */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+test_flat_requirement_absent_is_unsupported(void =
+**state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    struct ovpn_cap_query que=
+ry =3D new_query();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    feed(&amp;query=
+, msg_op_policy(OVPN_CMD_PEER_NEW, CMD_POLICY));</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_policy_attr(OTHER_POL=
+ICY, flat_req=2Etarget_attr, NL_POLICY_TYPE_ATTR_TYPE,</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+                                 NL_ATTR=
+_TYPE_U32));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ass=
+ert_int_equal(ovpn_cap_resolve(&amp;query, &amp;flat_req), OVPN_CAP_UNSUPPO=
+RTED);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    free(quer=
+y=2Elinks);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+/* a message we cannot parse stops the pass w=
+ith an error, rather than</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ * leaving a hole that would read as a no */</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+test_malformed_message_stops(void **state)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    struct ovpn_cap_query query =3D new_query()=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct nl_msg =
+*msg =3D nlmsg_alloc();</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    struct nlattr *ops, *op;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    as=
+sert_non_null(msg);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    assert_non_null(genlmsg_put(msg, NL_AUTO_PORT, NL_AUTO_SEQ, 0, 0, 0, CT=
+RL_CMD_GETPOLICY, 0));</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    ops =3D nla_nest_start(msg, CTRL_ATTR_OP_POLICY);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    op =3D nla_nest_start(msg, OVPN_CM=
+D_PEER_NEW);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ass=
+ert_int_equal(nla_put_u16(msg, CTRL_ATTR_POLICY_DO, CMD_POLICY), 0);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    nla_nest_end(msg, op);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    nla_nest_end(ms=
+g, ops);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(ovpn_cap_=
+query_cb(msg, &amp;query), NL_STOP);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    assert_true(query=2Eerr &lt; 0);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(query=2En_links, 0);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    nlmsg_free(msg)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    free(query=2El=
+inks);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+/* nothing to read an answer out of is not the sam=
+e as a &quot;no&quot; */</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tes=
+t_resolve_without_command_policy(void **state)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    struct ovpn_cap_query query =3D new_query();</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    assert_int_equal(ovpn_cap_resolve(&amp;query, &amp;t=
+est_req), OVPN_CAP_UNKNOWN);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+/* a kernel that does not ne=
+st the attribute simply never mentions it */</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+test_resolve_nested_absent(void **state)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    struct ovpn_cap_query query =3D new_query();</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_op_policy(OVPN_CMD_P=
+EER_NEW, CMD_POLICY));</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    assert_int_equal(ovpn_cap_resolve(&amp;query, &amp;test_req), OVPN_C=
+AP_UNSUPPORTED);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ free(query=2Elinks);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+/* the sub-policy is there but does=
+ not define the attribute: the ordinary no */</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+test_resolve_target_absent(void **state)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    struct ovpn_cap_query query =3D new_query();</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_op_policy(OVPN_CMD_=
+PEER_NEW, CMD_POLICY));</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    feed(&amp;query, msg_policy_attr(CMD_POLICY, OVPN_A_PEER, NL_POLICY=
+_TYPE_ATTR_POLICY_IDX,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                                 SUB_POLICY));</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    assert_int_equal(ovpn_cap_resolve(&amp;qu=
+ery, &amp;test_req), OVPN_CAP_UNSUPPORTED);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    free(query=2Elinks);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* right=
+ name, wrong type: not the attribute we would be writing */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+test_resolve_wrong_type(void **state)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct ovpn_cap_query query =3D new_q=
+uery();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_op_pol=
+icy(OVPN_CMD_PEER_NEW, CMD_POLICY));</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    feed(&amp;query, msg_policy_attr(CMD_POLICY, OVPN_A_PE=
+ER, NL_POLICY_TYPE_ATTR_POLICY_IDX,</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                                 SUB_POLICY));</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_policy_=
+attr(SUB_POLICY, test_req=2Etarget_attr, NL_POLICY_TYPE_ATTR_TYPE,</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                            =
+     NL_ATTR_TYPE_U8));</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    assert_int_equal(ovpn_cap_resolve(&amp;query, &amp;test_req), OVPN_=
+CAP_UNSUPPORTED);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  free(query=2Elinks);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+/* and the whole chain, from a dum=
+p to a yes */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static=
+ void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_resolve_c=
+omplete_chain(void **state)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct=
+ ovpn_cap_query query =3D new_query();</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    feed_full_chain(&amp;query);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    assert_int_equal(ovpn_cap_resolve(&amp;query, &amp;test_re=
+q), OVPN_CAP_SUPPORTED);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    free(query=2Elinks);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+/* the kernel&#39;s order i=
+s not relied upon */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_re=
+solve_any_order(void **state)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    stru=
+ct ovpn_cap_query query =3D new_query();</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    feed(&amp;query, msg_policy_attr(SUB_POLICY, test_req=2Etarget_attr, =
+NL_POLICY_TYPE_ATTR_TYPE,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                                 NL_ATTR_TYPE_U32));</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    feed(&amp;query, msg_policy_attr=
+(CMD_POLICY, OVPN_A_PEER, NL_POLICY_TYPE_ATTR_POLICY_IDX,</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                                 SUB_=
+POLICY));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    feed(&=
+amp;query, msg_op_policy(OVPN_CMD_PEER_NEW, CMD_POLICY));</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(ovpn_cap_resolve=
+(&amp;query, &amp;test_req), OVPN_CAP_SUPPORTED);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    free(query=2Elinks);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*=
+ a dump larger than the first allocation */</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+test_resolve_large_dump(void **state)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    struct ovpn_cap_query query =3D new_query();</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    for (uint16_t attr_id =3D 1; attr_id &lt;=3D =
+3 * OVPN_CAP_INITIAL_LINKS; attr_id++)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        feed(&amp;query, msg_policy_attr(OTHER_POLICY, attr_id, NL_POL=
+ICY_TYPE_ATTR_TYPE,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                                     NL_ATTR_TYPE_U32));</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    feed_full_chain(&amp;query);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    assert_true(query=2En_links &lt;=3D=
+ query=2Emax_links);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    assert_int_equal(ovpn_cap_resolve(&amp;query, &amp;test_req), OVPN_CAP=
+_SUPPORTED);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    fre=
+e(query=2Elinks);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+main(void)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    con=
+st struct CMUnitTest tests[] =3D {</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        cmocka_unit_test(test_reads_command_policy),</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(te=
+st_ignores_other_command),</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        cmocka_unit_test(test_follows_nested_attribute),</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_i=
+gnores_nested_attribute_elsewhere),</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        cmocka_unit_test(test_reads_target_type),</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test=
+_ignores_target_attribute_elsewhere),</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        cmocka_unit_test(test_ignores_target_attribute_in=
+_command_policy),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      cmocka_unit_test(test_ignores_nested_attribute_in_sub_policy),</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(t=
+est_nested_attribute_without_policy_idx),</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        cmocka_unit_test(test_target_attribute_withou=
+t_type),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmo=
+cka_unit_test(test_flat_requirement_reads_command_policy),</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_flat_r=
+equirement_absent_is_unsupported),</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        cmocka_unit_test(test_malformed_message_stops),</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test=
+(test_resolve_without_command_policy),</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        cmocka_unit_test(test_resolve_nested_absent),</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_te=
+st(test_resolve_target_absent),</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        cmocka_unit_test(test_resolve_wrong_type),</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_re=
+solve_complete_chain),</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        cmocka_unit_test(test_resolve_any_order),</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_resolve_lar=
+ge_dump),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    };</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    return cmocka_run_group_tests_name(&q=
+uot;dco&quot;, tests, NULL, NULL);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+}</span><br></pre><p>To view, visit <a href=3D"https://gerri=
+t=2Eopenvpn=2Enet/c/openvpn/+/1981?usp=3Demail">change 1981</a>=2E To unsub=
+scribe, or for help writing mail filters, visit <a href=3D"https://gerrit=
+=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope it=
+emtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"acti=
+on" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=
+=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1981?usp=3Demail"/><meta ite=
+mprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-Mes=
-sageType: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: o=
-penvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<di=
-v style=3D"display:none"> Gerrit-Change-Id: Ic5c421ec2e9627340924a05509bb8a=
-ff0bbf17da </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1983 <=
-/div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"=
-display:none"> Gerrit-Owner: Gianmarco De Gregori &lt;gianmarco@mandelbit=
-=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwab=
-e &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Ge=
-rrit-CC: Ralf Lici &lt;ralf@mandelbit=2Ecom&gt; </div>
-<div style=3D"displa=
-y:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2En=
-et&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: Arne Schwabe &=
-lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display=
+:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none">=
+ Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch:=
+ master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I0051effe7f06=
+36e30557d9ce92c50c458002f9e6 </div>
+<div style=3D"display:none"> Gerrit-Cha=
+nge-Number: 1981 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </d=
+iv>
+<div style=3D"display:none"> Gerrit-Owner: Gianmarco De Gregori &lt;gia=
+nmarco@mandelbit=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Revie=
+wer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"d=
+isplay:none"> Gerrit-Reviewer: Ralf Lici &lt;ralf@mandelbit=2Ecom&gt; </div=
+>
+<div style=3D"display:none"> Gerrit-CC: Antonio Quartulli &lt;antonio@man=
+delbit=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-dev=
+el &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"dis=
+play:none"> Gerrit-Attention: Ralf Lici &lt;ralf@mandelbit=2Ecom&gt; </div>=
 
-</body></html>
---wQ9/+q8GQEo=--
+<div style=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt;arne-openv=
+pn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: =
+Gianmarco De Gregori &lt;gianmarco@mandelbit=2Ecom&gt; </div>
+
+</body></htm=
+l>
+--vTtp8ZEZ2ck=--
 
 
---===============1644671918536099921==
+--===============1968425663579859805==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============1644671918536099921==
+--===============1968425663579859805==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -1503,5 +3363,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============1644671918536099921==--
+--===============1968425663579859805==--
 
